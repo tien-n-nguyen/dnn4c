@@ -1,0 +1,387 @@
+\section{Introduction}
+\label{intro}
+
+%\subsection{Research Problem}
+
+%Source code is not written randomly. It is repetitive and even has
+%higher regularity than natural-language texts~\cite{natural}. Based on
+%that, 
+In recent years, several researchers have applied statistical natural
+language processing (NLP) methods to support a wide range of software
+engineering (SE) tasks. For example, they leverage the capability of
+predicting the next tokens of the NLP models to recommend the next
+code element -- code completion~\cite{fse13,natural}, or the next API
+call~\cite{ethz-pldi14,icse15} in an editing session in an
+IDE. Exploring the statistical machine translation techniques in NLP,
+researchers have applied them to migrate code from one programming
+language to another -- language migration~\cite{ase15}, to synthesize
+code from English queries -- code
+synthesis~\cite{Raghothaman-ICSE16,tarlow14}, and to summarize code in
+English texts -- code summarization~\cite{bimodal15,rigby-icse15}.
+Other applications include code convention
+suggestion~\cite{barr-codeconvention-fse14}, model
+testing~\cite{tonella-icse14}, and analysis of program
+properties~\cite{raychev-popl15}.
+
+%Examples of those tasks include code completion~\cite{fse13,natural},
+%API recommendation~\cite{ethz-pldi14}, code
+%synthesis~\cite{wei-icse16,tarlow14}, code convention
+%suggestion~\cite{barr-codeconvention-fse14}, code
+%summarization~\cite{bimodal15,rigby-icse15}, model
+%testing~\cite{tonella-icse14}, language migration~\cite{ase15},
+%program analysis~\cite{raychev-popl15}, etc. 
+
+%The common philosophy of those approaches is that source code is
+%repetitive~\cite{natural}. The repetitiveness and regularity in source
+%code was leveraged to support those SE tasks.
+
+% such as computing the likelihood of the next code token in code
+% suggestion, code completion, and API
+% recommendation~\cite{natural,fse13,ethz-pldi14}, computing the most
+% likely code sequences in the target language for code migration or
+% code synthesis~\cite{ase15,wei-icse16}, predicting the most likely
+% type annotations in a program~\cite{raychev-popl15}, computing the
+% likelihood of deriving feasible test cases from a
+% model~\cite{tonella-icse14}, etc.
+
+%{\bf N-gram} model is one of the most popular statistical
+%LMs~\cite{manning99,ngram-wiki,dnnbook}. It assumes that a sequence of
+%words is generated from left to right and the probability of a word
+%being generated in that sequence is dependent only on its local
+%context, i.e., a window of $n$ previously generated words. Despite the
+%well-known weakness in taking only a window of prior words as the
+%history, $n$-gram LM is still a state-of-the-art model. It has been
+%successfully used with different abstractions to detect fine-grained
+%programming patterns in source code to support the SE
+%applications~\cite{natural,fse13,ethz-pldi14,tonella-icse14,ase15}.
+
+One important denominator across those approaches and applications is
+the concept of {\em statistical language model} (LM). A statistical LM
+is aimed to compute a probability distribution over all possible
+strings of words in a language. Given a vocabulary $V$ of words as
+basic units, a language model $L$ aims to compute $P(s|L)$, which is
+the probability that a sequence $s$ of the words in $V$ is
+``generated'' by the model following a generative process in
+$L$. Being able to estimate such probability facilitates several
+algorithms in many SE applications~\cite{white-msr15}.
+
+%$N$-gram model is one of the most popular statistical
+%LMs~\cite{manning99,dnnbook}. It assumes that a sequence of
+%words is generated from left to right and the probability of a word
+%being generated in that sequence is dependent only on its local
+%context, \ie a window of $n$ previously generated words.
+
+A recent advance in statistical language model is neural network
+language model (NNLM). 
+%
+%NNLM has shown success in both perplexity and word error rate compared
+%to conventional $n$-gram LM~\cite{DNNLM12}.  The key advantage of
+%NNLMs over the counting-based $n$-gram LM is that history is no longer
+%seen as exact sequences of prior words, but rather as a projection of
+%the entire history into some lower dimensional
+%space~\cite{dnnbook}. 
+%Inspired by the recent success of Deep Neural Network (DNN) in several
+%areas, 
+Mikolov {\em et al.}~\cite{mikolov11,mikolov10}, Le {\em et
+  al.}~\cite{le-taslp13}, and Arisoy {\em et al.}~\cite{DNNLM12} have
+proposed DNN-based language models (DNN LMs) that
+%. Deep neural networks
+%with multiple layers
+%and efficient computation process 
+have been shown to capture higher-level discriminative information
+about input features with multiple layers and to be able to learn
+higher-level, abstract representations of the input~\cite{dnnbook}.
+%NNLM has shown improvements in both perplexity and word error rate
+%compared to conventional $n$-gram LM~\cite{DNNLM12}.
+
+%Among other popular statistical LMs, neural network language models
+%(NNLMs) have shown success in both perplexity and word error rate
+%compared to conventional $n$-gram language models~\cite{DNNLM12}.  The
+%key advantage of NNLMs over the counting-based $n$-gram LMs is that
+%history is no longer seen as exact sequence of $n$-1 words, but rather
+%as a projection of the entire history into some lower dimensional
+%space~\cite{dnnbook}. Inspired by the recent success of Deep Neural
+%Network (DNN) in several areas, Mikolov {\em et
+%  al.}~\cite{mikolov11,mikolov10}, Le {\em et al.}~\cite{le-taslp13},
+%and Arisoy {\em et al.}~\cite{DNNLM12} have proposed DNN-based
+%language models (DNN LMs). Deep neural networks (DNNs) with more
+%layers and efficient computation process have been shown to capture
+%higher-level discriminative information about input features and can
+%learn higher-level, abstract representations of the
+%input~\cite{dnnbook}.
+
+%The main advantage of NNLMs over the traditional counting-based N-gram
+%LMs is that history is no longer seen as exact sequence of N-1 words,
+%but rather as a projection of the entire history into some lower
+%dimensional space. This leads to a reduction of the total number of
+%parameters in the model that have to be trained, resulting in
+%automatic clustering of similar histories. Compared with the
+%class-based N-gram LMs, the NNLMs are different in that they project
+%all words into the same low dimensional space, in which there can be
+%many degrees of similarity between words. On the other hand, NNLMs
+%have much larger computational complexity than N-gram LMs.
+
+%The basic idea is to learn to associate each word in the dictionary
+%with a continuous-valued vector representation, which in the
+%literature is called a word embedding, where each word corresponds to
+%a point in a feature space. One can imagine that each dimension of
+%that space corresponds to a semantic or grammatical characteristic of
+%words.
+
+%The neural network learns to map that sequence of feature vectors to
+%the probability distribution over the next word in the sequence. The
+%distributed representation approach to LMs has the advantage that it
+%allows the model to generalize well to sequences that are not in the
+%set of training word sequences, but that are similar in terms of their
+%features, i.e., their distributed representation.  Because neural
+%networks tend to map nearby inputs to nearby outputs, the predictions
+%corresponding to word sequences with similar features are mapped to
+%similar predictions.
+
+%+ DNN LM: (IBM and Microsoft papers)
+
+%Neural network languagemodels (NNLMs) have shown success in both
+%peplexity and word error rate (WER) compared to conventional n-gram
+%language models. Most NNLMs are trained with one hidden layer. Deep
+%neural networks (DNNs) with more hidden layers have been shown to
+%capture higher-level discriminative information about input features,
+%and thus produce better networks.
+
+%Motivated by the success of DNNs in acoustic modeling, we explore deep
+%neural network language models (DNN LMs) in this paper. Results on a
+%Wall Street Journal (WSJ) task demonstrate that DNN LMs offer
+%improvements over a single hidden layer NNLM.  Furthermore, our
+%preliminary results are competitive with a model M language model,
+%considered to be one of the current state-of-the-art techniques for
+%language modeling.
+
+%the aforementioned SE
+
+Applying DNN LM to source code can improve accuracy in those SE
+applications. Toward that goal, 
+%White {\em et al.}
+a few approaches~\cite{white-msr15} have directly applied the recurrent
+NN-based LM on textual code tokens.
+It treats code tokens simply as words. 
+However, the model has difficulties in dealing with the ambiguities in
+the names of program elements and API elements (classes, method calls,
+and field accesses).  For example, the model could mistakenly detect
+the following two different occurrences as belonging to the same
+pattern: \code{x.next} for {\em accessing to the field} \code{next}
+{\em of a \code{LinkedList}} as opposed to \code{x.next} for {\em
+  calling to the method} \code{next} {\em of a \code{Scanner}}
+object. Moreover, the occurrences with different variables' names,
+which should be considered as the same pattern, are not recognized so.
+For example, both \code{l=s.length()} and \code{len=str.length()} are
+two instances of the pattern ``{\em get the length of a string
+  variable and assign to an integer}''. However, the model cannot
+detect them as the same pattern. Therefore, it cannot learn from one
+place and recommend for another place.
+
+%\subsection{Our Solution}
+
+We conjecture that different features and contexts need
+to be extracted because source code has different characteristics than
+natural language texts.
+%
+Specifically, a program has well-defined syntax and semantics
+according to the programming languages. The context regarding the
+program's syntax and semantics is useful in predicting the next code
+token, thus improving the estimation of occurrence likelihood of a
+code sequence. 
+%If a model can make use of the current syntactic unit as a context, it
+%could potentially improve the prediction accuracy for the next code
+%token. 
+For example, in the portion of code: \code{`for (int i = 0; i < n;
+  i++'}, if a model recognizes the {\em current syntactic context} of
+an {\em update expression} of a \code{for} loop, it would likely
+suggest `)' as the next token.
+%
+%Those code tokens could be far apart and cannot be captured within
+%$n$-grams with reasonable sizes. 
+However, if \code{i++} is a part of sequential statements, the token
+\code{`;'} is likely to be suggested. In addition, the syntactic rules
+in a programming language enforce the presence of pairs of code tokens
+(\eg \code{try/catch}, \code{do/while}). Thus, if a model encounters
+the first token, it could likely suggest the second one.
+
+Importantly, unlike in natural languages, a program has well-defined
+semantics, which is a valuable source for such prediction. For
+example, with data type information, a model could avoid mistakenly
+detecting \code{x.next} from \code{LinkedList.next} and \code{x.next}
+from \code{Scanner.next} as the instances of the same pattern.
+%
+%a pattern due to considering code of different tasks as the same,
+%e.g., \code{x.next} for {\em accessing to the field \code{next} of a
+%  \code{LinkedList}} within its code as opposed to \code{x.next} for
+%{\em calling to the method \code{next} of a \code{Scanner}}.
+%
+Moreover, with type information, the related APIs in a usage pattern
+(\eg \code{Iterator.next} often comes before \code{Iterator.hasNext})
+can be captured. 
+%
+Importantly, if the token type (\eg variable, method call) is also
+considered, patterns at higher abstraction levels can be
+detected~\cite{fse13}, \eg \code{l=s.length()} and
+\code{len=str.length()}.
+%For example, \code{l=s.length()} and \code{len=str.length()} would be
+%recognized as belonging to the same pattern. Thus, the model could
+%learn from one place and applies to another.
+%``{\em get the length of a string variable and assign to an
+%  integer}''.
+%Furthermore, the return type is also useful. For example, if the above
+%pattern is captured, when a code completion is requested after
+%\code{str}, the method \code{length()} would be a likely candidate
+%because its return type (\code{int}) matches with the pattern.
+More general, in source code, the names of the variables, fields,
+methods, classes, and API elements (method calls, field accesses)
+could be ambiguous. We expect that type information is useful for a model 
+%to handle that.
+to distinguish them.
+
+%we listed ambiguous cases on syntactic units within different
+%contexts; variables, fields, classes, methods¡¯ names; and fields and
+%API method calls (e.g., the field ¡°next¡± of LinkedList and method
+%¡°next¡± of Scanner). Contexts are useful in those cases.
+
+
+
+%LOOK into SLAMC examples
+%Semantic info: data types and token types ...  (SLAMC: suggests this
+%kind of context but do not recommend at the token level. Instead, it
+%recommends what the next data type or token type).
+
+%may be not needed
+%In brief, the contexual information regarding a program's syntax and
+%semantics need to be considered in a model. It is not straightforward
+%to decide what features should be extracted and how to integrate them
+%into an DNNN LM.
+
+In this paper, we propose to treat source code as source code (rather
+than texts) by changing both the model and the input
+features. Specifically, we propose to incorporate {\em syntax and type
+  contexts} in a program in predicting the next code token. We also
+present {\tool}, a multi-prototype DNN language model for integrating
+syntax and type contexts.
+%
+%to adapt DNN language model for source code.  We present {\tool}, a
+%DNN LM~that incorporates syntactic and type contexts for higher
+%accuracy. 
+%
+For syntactic context, we associate code tokens with syntactic
+annotations, called {\em syntaxemes}. For example, the \code{while}
+loop \code{`while (i < 9) i++;'} is encoded into the syntaxeme
+sequence \code{`WHILE OP EXPR CP EXPR SC'}. For type context, we
+associate code~with the annotations, called {\em
+  sememes}~\cite{fse13}, including {\em data types} (\eg
+\code{LinkedList}) and {\em token types} (\ie field and method
+declarations, field accesses, method calls, and variables). For
+example, \code{length} in \code{`str.length()'} is associated with the
+sememe sequence \code{CALL[String,length,0,int]} (class name:
+\code{String}, method name: \code{length}, no parameter, and return
+type: \code{int}). Syntax and type contexts are extracted and put
+in the form of syntactic and type vectors, as parts of the model's
+input together with the lexical vectors.  We used a DNN-based
+method~\cite{huang12} to incorporate the contexts.
+%syntactic/semantic contexts in source code.
+
+%The syntactic and semantic contexts are incorporated via
+
+%We~observed that with contexts, related tokens at different levels are
+%captured.
+
+%For further comparison, we also extended SLAMC into a new
+%Bayesian-based LM that considers both syntactic and semantic contexts
+%(note that Bayesian-based SLAMC does not include syntactic
+%context). Our empirical results show that {\tool} outperforms the
+%Bayesian-based LM. This demonstrates that our integration method of
+%syntactic/semantic contexts via DNN is better than the integration
+%method using Bayesian Inference of SLAMC. Moreover, we found that the
+%Bayesian-based LM achieves higher accuracy than SLAMC, thus, showing
+%also the importance of the syntactic context.
+
+%Our intrinsic 
+
+We evaluated Dnn4C in two SE applications: code completion and code
+migration. Our empirical evaluation on several
+projects shows that {\tool} relatively improves up to 44.7\%, 27.1\%,
+16.3\%, and 11.6\% top-1 accuracy in code completion over the $n$-gram
+model~\cite{natural}, SLAMC~\cite{fse13}, DNN LM~\cite{DNNLM12},
+recurrent NN~LM \cite{white-msr15}, respectively. We observed that
+even using only lexical tokens, it has up to 15.6\% relative
+improvement in top-1 accuracy than the $n$-gram model.
+%
+%Our result shows that both our new model with DNN~and the new features
+%with syntactic and semantic contexts help improve accuracy.
+%
+%We also made a further comparison of the feature incorporating technique
+%via DNN for syntactic/semantic contexts to the feature incorporating method
+%using Bayesian Inference. 
+%Our empirical result shows that {\tool} outperforms the Bayesian-based
+%LM
+%up to 19.1\% in top-1 accuracy.
+%
+%We also observed that with {\tool}, related tokens at the lexical
+%level are better captured. 
+%
+In the second application, we used {\tool} in code migration from Java
+to C\texttt{\#} and showed that it helps improve migration accuracy up
+to 33.2\% syntactically and 30.3\% semantically. 
+%
+%In the third application, we showed that {\tool} helps improve
+%accuracy in code synthesis from a given English query.
+
+%As another application, we showed that it helps improve accuracy over
+%$n$-gram LM in migrating code from Java to~C\texttt{\#} with a
+%phrase-based translation model.
+
+
+%we also extended SLAMC into a new Bayesian-based LM that considers
+%both syntactic and semantic contexts (note that Bayesian-based SLAMC
+%does not include syntactic context). Our empirical results show that
+%{\tool} outperforms the Bayesian-based LM. This demonstrates that our
+%integration method of syntactic/semantic contexts via DNN is better
+%than the integration method using Bayesian Inference of
+%SLAMC.
+%
+%%Moreover, we also found that the Bayesian-based LM achieves higher
+%%accuracy than SLAMC, thus, showing also the importance of the
+%%syntactic context.
+%
+%For comparison, we also develop a language model that is based on
+%Bayesian Inference (BI) with the integration of syntactic and semantic
+%contexts into the prediction of the next lexical token. Our results
+%show that {\tool} achieves ?-?\% higher accuracy than our BI LM
+%model.
+In this paper, our key contributions include
+
+\begin{enumerate}
+
+\item {\tool}, a {\em DNN language model for source code} with the
+incorporation of {\em both syntactic and type contexts},
+
+%2. a Bayesian-based language model with such integration,
+
+%2. The code suggestion engine that is based on the model,
+
+\item Two applications of {\tool} in {\em code completion}, and {\em
+  code migration}, and
+
+\item An extensive empirical evaluation on {\tool}'s accuracy in each of
+the above applications.
+
+\end{enumerate}
+
+%The model learns word representations that better capture the
+%semantics of words, while still keeping syntactic information. These
+%improved representations can be used to represent contexts for
+%clustering word instances, which is used in the multi-prototype
+%version of our model that accounts for words with multiple senses.
+
+%Second, we integrate the contexts. We have two strategies:
+%1) with DNN LM: {\tool}.
+%2) with Bayesian Network. : compare with Bayesian model
+%We found that {\tool} achieves the best.
+
+
+
