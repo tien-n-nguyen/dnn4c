@@ -6,7 +6,10 @@
 %Source code is not written randomly. It is repetitive and even has
 %higher regularity than natural-language texts~\cite{natural}. Based on
 %that, 
-In recent years, several researchers have applied statistical natural
+%In recent years, s
+
+
+Several researchers have applied statistical natural
 language processing (NLP) methods to support a wide range of software
 engineering (SE) tasks. For example, they leverage the capability of
 predicting the next tokens of the NLP models to recommend the next
@@ -17,7 +20,7 @@ researchers have applied them to migrate code from one programming
 language to another -- language migration~\cite{ase15}, to synthesize
 code from English queries -- code
 synthesis~\cite{Raghothaman-ICSE16,tarlow14}, and to summarize code in
-English texts -- code summarization~\cite{bimodal15,rigby-icse15}.
+texts -- code summarization~\cite{bimodal15,rigby-icse15}.
 Other applications include code convention
 suggestion~\cite{barr-codeconvention-fse14}, model
 testing~\cite{tonella-icse14}, and analysis of program
@@ -55,15 +58,17 @@ properties~\cite{raychev-popl15}.
 %programming patterns in source code to support the SE
 %applications~\cite{natural,fse13,ethz-pldi14,tonella-icse14,ase15}.
 
-One important denominator across those approaches and applications is
-the concept of {\em statistical language model} (LM). A statistical LM
-is aimed to compute a probability distribution over all possible
+One important denominator across those approaches 
+%and applications is the concept of 
+is {\em statistical language model} (LM),
+%A statistical LM
+which is aimed to compute a probability distribution over all possible
 strings of words in a language. Given a vocabulary $V$ of words as
 basic units, a language model $L$ aims to compute $P(s|L)$, which is
 the probability that a sequence $s$ of the words in $V$ is
 ``generated'' by the model following a generative process in
-$L$. Being able to estimate such probability facilitates several
-algorithms in many SE applications~\cite{white-msr15}.
+$L$. To estimate such probability facilitates several
+algorithms in SE applications~\cite{white-msr15}.
 
 %$N$-gram model is one of the most popular statistical
 %LMs~\cite{manning99,dnnbook}. It assumes that a sequence of
@@ -204,40 +209,25 @@ However, if \code{i++} is a part of sequential statements, the token
 in a programming language enforce the presence of pairs of code tokens
 (\eg \code{try/catch}, \code{do/while}). Thus, if a model encounters
 the first token, it could likely suggest the second one.
-
-Importantly, unlike in natural languages, a program has well-defined
-semantics, which is a valuable source for such prediction. For
-example, with data type information, a model could avoid mistakenly
-detecting \code{x.next} from \code{LinkedList.next} and \code{x.next}
-from \code{Scanner.next} as the instances of the same pattern.
 %
-%a pattern due to considering code of different tasks as the same,
-%e.g., \code{x.next} for {\em accessing to the field \code{next} of a
-%  \code{LinkedList}} within its code as opposed to \code{x.next} for
-%{\em calling to the method \code{next} of a \code{Scanner}}.
+%Tien ---- removing ---- 
+%Importantly, unlike in natural languages, a program has well-defined
+%semantics, which is a valuable source for such prediction. For
+%example, with data type information, a model could avoid mistakenly
+%detecting \code{x.next} from \code{LinkedList.next} and \code{x.next}
+%from \code{Scanner.next} as the instances of the same pattern.
+%Moreover, with type information, the related APIs in a usage pattern
+%(\eg \code{Iterator.next} often comes before \code{Iterator.hasNext})
+%can be captured. 
 %
-Moreover, with type information, the related APIs in a usage pattern
-(\eg \code{Iterator.next} often comes before \code{Iterator.hasNext})
-can be captured. 
-%
-Importantly, if the token type (\eg variable, method call) is also
-considered, patterns at higher abstraction levels can be
-detected~\cite{fse13}, \eg \code{l=s.length()} and
-\code{len=str.length()}.
-%For example, \code{l=s.length()} and \code{len=str.length()} would be
-%recognized as belonging to the same pattern. Thus, the model could
-%learn from one place and applies to another.
-%``{\em get the length of a string variable and assign to an
-%  integer}''.
-%Furthermore, the return type is also useful. For example, if the above
-%pattern is captured, when a code completion is requested after
-%\code{str}, the method \code{length()} would be a likely candidate
-%because its return type (\code{int}) matches with the pattern.
-More general, in source code, the names of the variables, fields,
+%Importantly, if the token type (\eg variable, method call) is also
+%considered, patterns at higher abstraction levels can be
+%detected~\cite{fse13}, \eg \code{l=s.length()} and
+%\code{len=str.length()}.
+Moreover, in source code, the names of the variables, fields,
 methods, classes, and API elements (method calls, field accesses)
-could be ambiguous. We expect that type information is useful for a model 
-%to handle that.
-to distinguish them.
+could be ambiguous. We expect that type information is useful for a
+model to distinguish them as explained earlier.
 
 %we listed ambiguous cases on syntactic units within different
 %contexts; variables, fields, classes, methods¡¯ names; and fields and
@@ -364,7 +354,7 @@ incorporation of {\em both syntactic and type contexts},
 
 %2. The code suggestion engine that is based on the model,
 
-\item Two applications of {\tool} in {\em code completion}, and {\em
+\item Two applications of {\tool} in {\em code completion} and {\em
   code migration}, and
 
 \item An extensive empirical evaluation on {\tool}'s accuracy in each of
