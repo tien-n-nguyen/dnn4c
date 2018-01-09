@@ -1,0 +1,128 @@
+\subsection{Application of {\tool} in Code Migration}
+
+We conducted another experiment to show a useful application of our
+model in code migration. We used {\tool} as a language model in a
+phrase-based statistical machine translation tool,
+Phrasal~\cite{phrasal10}, to {\em take a method in Java and produce a
+  respective method in C\texttt{\#}}. Generally, Phrasal's SMT
+translation produces a sequence $t$ in the target language $T$ from a
+sequence $s$ in the source language $S$, where $t$ is the most likely
+sequence according to two constituent models: translation and language
+models. The language model computes how likely sequence $t$ occurs in
+the target language while the translation model computes how likely
+two sentences $s$ and $t$ co-occur in the respective texts of the
+two languages in the training corpus.
+
+\begin{table}[t]
+	\footnotesize
+%\small
+	\tabcolsep 2.5pt
+  \centering
+  \caption{Subject Systems~\cite{ase15}}
+    \begin{tabular}{l|rrr|rrr|r}
+    \toprule
+    Project & \multicolumn{3}{c}{Java} \vline& \multicolumn{3}{c}{C\texttt{\#}} \vline& M.Meth \\
+    \hline
+		& Ver   &File 		&Meth 	&Ver 			&File 		&Meth 		&  \\
+		\hline					
+    Antlr~\cite{Antlr} 		   & 3.5.0 & 226   	& 3,303  & 3.5.0 	& 223   	& 2,718  	& 1,380 \\
+    db4o~\cite{db4o}  		   & 7.2   & 1,771 	& 11,379 & 7.2   	& 1,302  	& 10,930 	& 8,377 \\
+    fpml~\cite{fpml}  		   & 1.7   & 138   	& 1,347  & 1.7   	& 140   	& 1,342  	& 506 \\
+    Itext~\cite{Itext} 		   & 5.3.5 & 500   	& 6,185  & 5.3.5 	& 462   	& 3,592  	& 2,979 \\
+    JGit~\cite{JGit}  		   & 2.3   & 1,008 	& 9,411  & 2.3   	& 1,078  	& 9,494  	& 6,010 \\
+    JTS~\cite{JTS}   		   & 1.13  & 449   	& 3,673  & 1.13  	& 422   	& 2,812  	& 2,010 \\
+    Lucene (LC)~\cite{Lucene}  	   & 2.4.0 & 526   	& 5,007  & 2.4.0 	& 540   	& 6,331  	& 4,515 \\
+    Neodatis (ND)~\cite{Neodatis}       & 1.9.6 & 950   	& 6,516  & 1.9b-6       & 946           & 7,438 	& 4,399 \\
+    POI~\cite{POI}   		   & 3.8.0 & 880        & 8,646  & 1.2.5 	& 962   	& 5,912  	& 4,452 \\
+    \bottomrule
+    \end{tabular}%
+  \label{tab:systems}%
+\end{table}%
+
+
+
+We ran Phrasal with two settings: 1) with its built-in $n$-gram
+language model, and 2) with {\tool}. We built syntaxemes and sememes
+for C\texttt{\#} in the same manner as described in
+Section~\ref{contextsec}.
+%
+We trained the models in two settings with a parallel corpus used in
+an existing work in code migration~\cite{ase15}
+(Table~\ref{tab:systems}). We used the same procedure as in the
+existing work in code migration~\cite{ase15}: we applied ten-fold
+cross validation by dividing all mapped methods into ten folds with
+equal numbers of methods. To test for a fold, we used the remaining
+folds for training. The resulting methods were compared against the
+respective ones in the oracle.
+%
+To measure performance, we use three metrics. First, we use BLEU
+score~\cite{bleu} to measure lexical correctness. Second, syntactic
+correctness {\bf (SCR)} is measured by the ratio between the number of
+translated methods that compile over the total number of translated
+methods. Third, semantic correctness {\bf (SeCR)} is defined as the
+ratio between the number of semantically correct translated methods
+over the total number of translated methods. To check semantic
+correctness, we compare the~program dependence graph (PDG) for each
+translated method against the PDG of the respective reference method
+in the oracle, according to the comparison technique for PDGs
+from~\cite{hsiao-oopsla14}.
+
+Table~\ref{tab:result} shows the result. As seen, {\tool} is able to
+help Phrasal improve translation accuracy with up to 33.2\%
+syntactically and 30.3\% semantically. Such improvement is because
+that {\tool} provides better estimation of the occurrence probability
+of the code sequences in the target language.
+
+\begin{table}[t]
+  \centering
+	\tabcolsep 3pt
+  \small
+  \caption{Accuracy Comparison in Code Migration}
+    \begin{tabular}{l|rr|rr|rr}
+    \toprule
+    Project 	& \multicolumn{2}{c}{BLEU \%}  \vline&\multicolumn{2}{c}{Syntax Correct \%} \vline&\multicolumn{2}{c}{Sem Correct \%} \\
+    \midrule
+	&  Phrasal 	& Phrasal	& Phrasal 	& Phrasal 	& Phrasal 	& Phrasal \\
+        &               & + {\tool}     &               & + {\tool}     &               & + {\tool} \\
+    \midrule			
+	Antlr	& 83.6	  & 89.9	& 43.6 & 76.8	  & 29.2 & 59.5\\
+	db4o	& 89.9    & 93.5	& 72.2 & 86.0     & 57.4 & 80.7	\\
+	fpml	& 81.2	  & 82.4	& 58.7 & 65.2	  & 50.4 & 59.9	\\
+	Itext	& 81.8	  & 88.8	& 61.3 & 69.8     & 44.6 & 59.3	\\
+	JGit	& 89.1	  & 93.7	& 69.7 & 83.1	  & 54.9 & 59.2 \\	
+	JTS	& 80.2    & 85.3	& 61.6 & 66.8	  & 42.9 & 53.4	\\
+	LC	& 80.8	  & 83.4	& 52.3 & 63.5	  & 42.5 & 57.4	\\
+	ND	& 83.3	  & 87.7	& 72.1 & 76.9	  & 59.4 & 72.3 \\	
+	POI	& 82.9	  & 84.7	& 71.5 & 78.2	  & 50.4 & 70.3	\\
+ \bottomrule
+    \end{tabular}%
+  \label{tab:result}%
+\end{table}%
+
+%TIEN
+
+%\begin{table}[t]
+%  \centering
+%	\tabcolsep 3pt
+% \small
+% \caption{Accuracy Comparison in Code Migration}
+%   \begin{tabular}{l|rr|rr|rr}
+%   \toprule
+%   Proj. 	& \multicolumn{2}{c}{BLEU \%}  \vline&\multicolumn{2}{c}{Syntax Cor \%} \vline&\multicolumn{2}{c}{Sem Cor \%} \\
+%   \midrule
+%	&  Phrasal 	& Phrasal	& Phrasal 	& Phrasal 	& Phrasal 	& Phrasal \\
+%       &               & + {\tool}     &               & + {\tool}     &               & + {\tool} \\
+%   \midrule			
+%	Antlr	& 83.6	  & 89.9	& 43.6 & 76.8	  & 29.2 & 59.5\\
+%	db4o	& 89.9    & 93.5	& 72.2 & 86.0     & 57.4 & 80.7	\\
+%	fpml	& 81.2	  & 82.4	& 58.7 & 65.2	  & 50.4 & 59.9	\\
+%	Itext	& 81.8	  & 88.8	& 61.3 & 69.8     & 44.6 & 59.3	\\
+%	JGit	& 89.1	  & 93.7	& 69.7 & 66.1	  & 54.9 & 59.2 \\	
+%	JTS	& 80.2    & 79.1	& 61.6 & 66.8	  & 42.9 & 53.4	\\
+%	LC	& 80.8	  & 83.4	& 52.3 & 63.5	  & 42.5 & 57.4	\\
+%	ND	& 83.3	  & 87.7	& 72.1 & 76.9	  & 59.4 & 72.3 \\	
+%	POI	& 82.9	  & 84.7	& 71.5 & 78.2	  & 50.4 & 70.3	\\
+%\bottomrule
+%   \end{tabular}%
+% \label{tab:result}%
+%end{table}%
