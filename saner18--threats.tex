@@ -1,0 +1,75 @@
+\subsection{Limitations and Threats to Validity}
+
+\noindent
+{\bf Limitations.} As other DNN-based approaches, the training time
+and memory requirement in {\tool} are high.
+%, despite the improvement over neural networks. 
+However, training can be done off-line with
+%We could explore 
+parallel computing infrastructures for DNNs such as CUDA
+GPU-Accelerated DNNs~\cite{cuda-dnn}. Second, {\tool} supports only
+code sequences. However, data and control dependencies in code are not
+always captured well with sequences with limited sizes, thus, leading
+to inaccuracy. We could explore the graph structures with DNN as in
+GraLan~\cite{icse15}. 
+%Third, {\tool} rely on a window of history,
+%thus, missing long~and meaningful sequences. 
+%Third, since the number of inputs of an DNN must be determined, we
+%cannot support contexts with varied~sizes. 
+Current model is for Java only. For other languages, we need a
+different type of sememes/syntaxemes. Finally, there is no algorithm
+to learn the optimal models' parameters, thus, tuning is mainly
+empirical.
+
+\vspace{0.03in}
+\noindent
+{\bf Threats to Validity.} All projects are written in Java and might
+not be representative. However, our current dataset contains a very
+large number of SLOCs. We will explore other programming languages in
+future. In our evaluation, our simulated process is not~truly~program
+editing.  The result might also be different due to the use of partial
+program analysis tool and the DNN infrastructure,
+Deeplearning4j~\cite{Deeplearning4j} (upon which we built {\tool}),
+and the RNN toolkit~\cite{rnntool}.
+
+Currently, we evaluated {\tool} in next-token suggestion accuracy,
+code migration, and code synthesis. We will evaluate {\tool} in supporting other software engineering
+applications.
+
+%upon which we built {\tool}.
+
+%\noindent
+%{\bf Limitations.} As other DNN-based approaches, the training time
+%and memory requirement in {\tool} are high, despite the
+%improvement over neural networks. We could explore parallel computing
+%infrastructures for DNNs such as CUDA GPU-Accelerated
+%DNNs~\cite{cuda-dnn}. The second limitation is that there is no
+%algorithm to learn the optimal models' parameters, thus, the tuning
+%process is mainly empirical. Third, {\tool} supports only the sequence
+%of tokens. However, data and control dependencies in code are not
+%always captured well with sequences with limited sizes, thus,
+%leading to inaccuracy. Fourth, {\tool} rely on a window
+%of history, thus, missing long~and meaningful sequences.
+%Finally, since the number of inputs of an DNN must be determined, we
+%cannot support contexts with varied~sizes.
+
+%We re-implemented lexical n-gram model, rather than using
+%their tool.
+
+%, which might help to improve performance and accuracy.
+
+%- Performance: Its training time is high, although better than neural
+%network algorithm, due to the high complexity of training algorithm
+%and number of iterations to make its converge. It also costs much
+%resource, e.g. memory due to the high number of inputs and hidden
+%nodes, which leads to the high number of weighs w(x,y) and biases b.
+
+%- Parameter selection: there is no automatic algorithm to select
+%optimized parameters of DN
+%N, e.g. number of nodes, learning rate,
+%etc. However, the sensitivity analysis partly shows that the model is
+%robust when changing the number of nodes.
+
+%- Fixed number of inputs
+
+%- Support sequential n-gram only

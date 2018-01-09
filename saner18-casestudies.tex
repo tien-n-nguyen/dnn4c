@@ -1,0 +1,112 @@
+\subsection{Illustrative Examples}
+\label{cases}
+
+%1. Ranking
+
+%2. neighbor terms
+
+%3. n-grams that have never seen before
+
+%In addition to the illustrating examples in the introduction and
+%motivation,
+We investigated several cases in which {\tool}
+gives correct results due to the use of contexts. Let us
+explain a few examples.
+%take a few to explain different kinds of examples in our study.
+
+%All cases are found in db4o project.
+
+\vspace{0.03in}
+\noindent 
+{\bf Case 1.} We found this kind of examples where {\tool} correctly
+made a {\em code suggestion} in its top-ranked list due to the use of
+{\em syntactic context}, while $n$-gram did not because the lexical
+sequence was {\em not encountered} in the training data (i.e., was not
+captured with any $n$-gram).
+%
+For example, after the sequence \code{public void
+  testClassConstraint}, {\tool} suggests the token `(' as the top
+candidate. Because \code{public void testClassConstraint(...)} is a
+test method and does not occur in the training data, $n$-gram did not
+rank the token `(' in its top-20 candidates.  However, {\tool} is able
+to learn the next token `(' via the syntactic context with the
+syntaxeme sequence \code{MOD VOID ID} coming before `(' from
+other method declarations with a modifier, a type \code{void}, and an
+identifier. That is, syntaxemes allow {\tool} to capture the syntactic
+units from a code portion and apply for prediction at another place
+with the same syntactic context. 
+
+%Mining patterns app, migration?
+To evaluate if {\tool} can capture {\em syntactic patterns}, we
+specifically observed if it suggests correctly the tokens in the
+syntax sequence ``\code{catch `(' AnException e `)'}'' where
+\code{AnException} is a (sub)type of \code{Exception}. Top-1 accuracy
+is high ($>$75\%). Thus, {\tool} can detect the syntactic pattern
+\code{CATCH OP NAME ID CP}.
+
+For code migration, {\tool} helps Phrasal more correctly migrate the
+syntactic units (e.g., \code{catch} statement).
+
+%As another example, the 5-gram ``\code{catch `(' Db4oException e
+%  `)'}'' did not appear in the training set, and $n$-gram failed to
+%rank it as the top candidates. However, {\tool} uses syntaxemes and
+%recognizes the syntax \code{CATCH OP NAME ID CP} at other
+%locations. Thus, it can suggest CP, i.e., the token `)'.
+%----------------------------
+
+%{\tool} can recommend token \code{)} (with rank 15) after sequence
+%\code{catch, (, Db4oException, e, } why N-gram cannot. The reason is
+%that the used of \code{catch, (, Db4oException, e, } has never been
+%seen in training set. However {\tool} can learn possibly due similar
+%context use of \code{catch, (, aException, aVariable, }.
+
+
+%\textbf{Case 1}: {\tool} can recommend token \code{(} (with rank 1)
+%after sequence \code{public, void, testClassConstraint} why N-gram
+%cannot.  The reason is that method declaration \code{public void
+%  testClassConstraint (...} appears once in code base and in testing
+%set. N-gram cannot learn from training set.  However {\tool} can learn
+%the common similar sequence \code{public void ID ( ...} and it can
+%infer the token \code{(} due to similar context
+
+\vspace{0.04in}
+\noindent
+\textbf{Case 2}: The second kind of examples is similar to the first
+except that {\tool} uses sememes to help suggestion. An example of this
+is
+\fbox{
+  \parbox{3.18in}{
+   ListIterator listIter = nodes.listIterator();\\
+   while (listIter.\_
+	}
+}
+
+{\tool} can recommend the token \code{hasNext} (with rank \#4), while
+$n$-gram does not have it in the top-20 candidates. The reason is that
+the $n$-gram ``\code{while, `(', listIter,`.', hasNext}'' has not been seen
+in the training set. In contrast, by encoding the sequence with the
+sememes \code{WHILE OP VAR[ListIterator]}, {\tool} sees that sememe
+sequence in other places despite of different variables' names. Thus,
+with the type information, it can suggest \code{CALL [ListIterator, hasNext,
+  0, boolean]}, which corresponds to \code{hasNext}.
+
+%The reason is that the used of \code{while, (, listIter, ., hasNext}
+%has never been seen in training set. However {\tool} can learn
+%possibly due two reasons 1. 
+%The more complete code is, semantic can learn \code{listIter} is the
+%object of type \code{ListIterator}:
+%
+%2. {\tool} can learn from similar context use like \code{while, (,
+%  aListIterator, . , hasNext)}
+
+
+%\textbf{Case 3}:
+%{\tool} can recommend token \code{)} (with rank 15) after sequence \code{catch, (, Db4oException, e, } why N-gram cannot. The reason is that the used of \code{catch, (, Db4oException, e, } has never been seen in training set. However {\tool} can learn possibly due similar context use of \code{catch, (, aException, aVariable, }.
+
+%\textbf{DNN LM without Context}
+%Analysis relation between tokens.
+
+%\textbf{DNN LM with Context}
+%Analysis relation between tokens in different layers.
+
+%\input{neighboring}

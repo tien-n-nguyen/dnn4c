@@ -1,0 +1,395 @@
+\section{Related work}
+\label{related}
+
+%we enhanced
+%$n$-gram model by associating each token with semantic annotations
+%including data types and semantic roles to capture programming
+%idioms/patterns with a higher level of abstraction. 
+
+%In SLAMC~\cite{fse13}, we enhanced $n$-gram by associating each code
+%token with its role, data types, and topics.
+
+%We also added global context on $n$-gram with current technical topics
+%and code token pairwise associations.
+
+\noindent {\bf $n$-gram language model.} Source code and code changes
+have been shown to have repetitive
+nature~\cite{fse14-barr,gabel-fse10,natural,semdiff}. 
+%
+%Recently, there have been several approaches using $n$-gram
+%LM~\cite{manning99} to capture patterns in source code.
+%
+Hindle {\em et al.}~\cite{natural} use $n$-gram model~\cite{manning99}
+on lexical tokens to show that code has~low cross-entropy, and then
+leverage it to suggest the next token. Later, Tu {\em et
+  al.}~\cite{tu-fse14} improve $n$-gram model with caching capability
+for recently seen tokens to increase 
+%next-token prediction
+accuracy. Raychev {\em et al.}~\cite{ethz-pldi14} capture common
+sequences of API calls with $n$-gram to predict API call.
+%
+SLAMC~\cite{fse13} associates code tokens with
+semantic annotations, called {\em sememes}, which include their token
+and data types.~In comparison, there are key advances from {\tool} to
+SLAMC. First, SLAMC is still based on $n$-gram with Bayesian
+inference for topic modeling, despite that it operates on the sememes,
+a higher abstraction level than lexemes.
+%It uses $n$-1 prior sememes and lexemes for next-token
+%suggestion. 
+In~contrast, we use sememes as semantic features in
+{\tool}. Second, SLAMC uses the topics of the current file as the
+context.
+%Tien
+%as well as token pairwise associations to enhance the context
+%of $n$-gram. 
+{\tool} uses the capability of DNN in learning the association of code
+tokens with their syntactic and semantic contexts.
+%by encoding syntaxeme and sememe sequences as its input
+%vectors. 
+%Tien
+%Finally, in {\tool}, we use {\em syntaxemes} as the new
+%features. 
+%Our evaluation shows that {\tool} improves over SLAMC. 
+White {\em et al.} \cite{white-msr15} applied RNN LM on lexical code
+tokens to achieve higher accuracy than $n$-gram. They also suggested a
+range of SE applications. Mou {\em et al.}~\cite{tbcnn14} propose a
+tree-based convolutional neural network for source code, but
+consider only ASTs. Allamanis {\em et al.}~\cite{bimodal15} use bimodal
+modeling for short texts and code snippets.
+
+%GRALAN
+GraLan~\cite{icse15} is a graph-based LM that captures graph-based
+patterns from source code. In comparison, it uses Bayesian model on a
+graph/tree representation extracted from code, while {\tool} is
+DNN-based and operates on sequences.
+% of lexemes, syntaxemes, and sememes.
+%that are transformed into feature vectors. Moreover, while our BLM
+%model is also based on Bayesian Inference, it operates on the sequence
+%representation.
+Maddison and Tarlow~\cite{tarlow14} use probabilistic context free
+grammars and neuro-probabilistic language models for source
+code. Their model is generative and uses only lexical and syntactic
+contexts.
+%does not use semantic context. 
+%It is similar in spirit to {\tool} with \code{Lex+Syn}.
+%
+NATURALIZE~\cite{barr-codeconvention-fse14} is a $n$-gram-based
+statistical model that learns coding conventions to suggest natural
+identifier names and formatting conventions.
+%
+$n$-gram is used to find code templates relevant to a
+task~\cite{jacob10}, for large-scale code mining~\cite{sutton-msr13},
+for model testing~\cite{tonella-icse14}, etc.
+%Final
+%Gabel and Su~\cite{gabel-fse10} study code repetitiveness at the
+%syntactic level.
+%considered syntactical tokens and renamed IDs in the code sequences to
+%study code repetitiveness. 
+HMM has been used to learn from data to expand a
+user-provided abbreviation \cite{han-ase09}.
+
+
+%They are expanded into keywords by an HMM learned
+%from a corpus. 
+%In comparison to $n$-gram and sequence-based approaches, {\tool} helps
+%capture programming patterns at higher abstraction levels that can be
+%represented well as graphs or trees such as API usage patterns or
+%syntactic templates. 
+%Using $n$-gram for such patterns would face the challenges as
+%explained in Section~\ref{motivsec}.
+%Final
+%In comparison, {\tool} can capture patterns at higher abstraction
+%levels that can be modeled by graphs/trees.
+
+%Han {\em et al.}~\cite{han-ase09} have used
+
+%Similar to the
+%above approaches, Raychev {\em et al.}~\cite{ethz-pldi14} utilize
+%$n$-gram model to predict the next API by finding the highest ranked
+%sequence of API method calls.
+
+%In SLAMC~\cite{fse13}, we enhanced $n$-gram model by associating each
+%code token with semantic annotations including its role and data
+%types. We also added global context on $n$-gram with current technical
+%topics and code token pairwise associations. Tu {\em et
+%  al.}~\cite{tu-fse14} improves code suggestion capability of $n$-gram
+%with caching for recently seen tokens.
+
+%In comparison, {\tool} has key advances. First, its basic units are
+%semantic code tokens, which are incorporated with semantic
+%information, thus providing better predictability.
+%Second, {\tool}'s $n$-grams are also complemented with pairwise
+%association. It allows the representation of co-occurring pairs of
+%tokens that cannot be efficiently captured with $n$ consecutive tokens
+%in $n$-grams. Finally, a novel $n$-gram topic model is developed in
+%{\tool} to enhance its predictability via a global view on current
+%technical functionality/concerns.
+
+%Code repetition is also observed by Gabel {\em et
+%al.}~\cite{gabel-fse10}. 
+%They reported {\em syntactic redundancy} at levels of granularity from
+%6-40 tokens.
+%They considered only syntactical tokens and renamed IDs in the code
+%sequences, while {\tool} operates at the semantic level.
+%%They also reported a high degree to which a project can be assembled
+%%from portions of the corpus, which is consistent with our empirical
+%%result.
+
+%$n$-gram model has been used to find code templates relevant to
+%current task~\cite{jacob10}. $n$-grams are built over clone
+%groups.
+
+%Bruch {\em et al.} \cite{bruch2009} propose three algorithms to
+%suggest the method call for a variable $v$ based on a codebase. First,
+%FreqCCS suggests the most frequently used method in the
+%codebase. Second, ArCCS is based on mined associate rules where a
+%method is often called after another. The third algorithm,
+%best-matching neighbors, uses as features the set of method calls of
+%$v$ in the current code and the names of the methods that use $v$. The
+%features of methods in examples are matched against those of the
+%current code for suggestion.
+
+%-- START ---
+
+%The {\bf statistical $n$-gram language model}~\cite{manning99} has
+%been used in capturing patterns in source code. Hindle {\em et
+%  al.}~\cite{natural} use $n$-gram model on lexical tokens 
+%to suggest for the next token. In SLAMC~\cite{fse13},
+%we enhanced $n$-gram by associating each code token with
+%its role, data types, and topics.
+%We also added global context on $n$-gram with current technical topics
+%and code token pairwise associations. 
+%Tu {\em et al.}~\cite{tu-fse14} improve $n$-gram with caching
+%for recently seen tokens to improve next-token
+%suggestion accuracy. Raychev {\em et al.}~\cite{ethz-pldi14} capture
+%common sequences of API calls with $n$-gram to predict next API
+%call. We do not compare to SLAMC~\cite{fse13} and Tu {\em et
+%  al.}~\cite{tu-fse14} since SLAMC uses the annotations on code
+%tokens that are inapplicable to APIs, and Tu {\em et al.} focus on
+%lexical tokens.
+%they still use $n$-grams
+%and on lexical tokens.
+
+
+
+
+
+%~Inst\-ances occurring more than a
+%threshold are reported as~patterns.
+
+%Other related line of approaches is {\bf code completion} based on mined
+%patterns. 
+\vspace{0.04in}
+\noindent {\bf Code completion and suggestion.}  Bruch {\em et al.}
+\cite{bruch-fse09} propose three algorithms for code completion. They
+proposed FreqCCS, which suggests the most frequently used method, and
+ArCCS, which mines associate rules on API calls. Their best-matching
+neighbor algorithm uses the set of API calls of current variable
+$v$ and the names of the methods using $v$ as features to match in
+the codebase.
+%and matches them against those in the codebase for code completion.
+% uses as features the {\em set} of API calls of the current
+%variable $v$ and the names of the methods using $v$.  The set features
+%in the current code is matched against those in the codebase for API
+%suggestion.  FreqCCS~\cite{bruch-fse09} suggests the most frequent
+%call and ArCCS~\cite{bruch-fse09} mines associate rules on API calls.
+%They also proposed FreqCCS, which suggests the most frequently used
+%method, and ArCCS, which mines associate rules on API calls.
+Grapacc~\cite{icse12-grapacc} uses subgraph mining to find
+usage patterns for recommendation.
+%
+The literature in pattern mining using deterministic
+algorithms is rich, including mining frequent
+pairs, subsequences \cite{zeller07,mapo-fse07,mapo-ecoop09}, item
+sets~\cite{bruch-fse09}, subgraphs~\cite{neglected}, associate
+rules~\cite{davidlo-ase08}.
+
+%extracts a Groum from current code to match it against a database of
+%Groums.
+%mines patterns as graphs and matches them against the current
+%code. In comparison,
+%%both extract Groums from code. However, 
+%Grapacc uses deterministic subgraph pattern mining.
+%to find patterns.
+%A pattern graph must occur more than a threshold of times. 
+%Statistic-based {\tool} considers all subgraphs, thus requires
+%higher computation/storage. While trying to~complete a largest pattern
+%as possible, Grapacc cannot suggest smaller subpattern. {\tool}
+%potentially can by using its subgraphs as~explained.
+%{\tool} can do so by computing the probability to generate a graph
+%given observed subgraphs.
+%--------------------------------------------
+
+Several approaches have been proposed for code completion/suggestion
+and code search. Recent editing sessions~\cite{robbes08}, developer
+usage history~\cite{mylyn06}, and crowsourcing~\cite{mira14} have been
+used for such improvement~\cite{hou-icsm11,denys-rsse10}. 
+%Similar code with similar structures have been
+%explored~\cite{hill04}. 
+Structural context of current code is used to suggest code
+examples~\cite{strathcona05,hill04}. Others aim to complete parameters
+of a call~\cite{zhang-icse12} or generate the details on APIs in use
+in IDEs~\cite{omar12}. There are rich literature and tools for code
+search~\cite{reiss-icse09,stolee12,reid-icse14,weimer-icse12}.
+
+%There are code search engines that find code matching with
+%user-specified constraints~\cite{reiss-icse09,stolee12}, search for
+%entire applications~\cite{examplar12}, synthesize API usage
+%examples~\cite{weimer-icse12}, link code to API
+%documentation~\cite{reid-icse14}, etc.
+
+
+%Baker parses code snippets to link them to API
+%documentation~\cite{reid-icse14}. 
+%Buse and Weimer~\cite{weimer-icse12} use path sensitive dataflow
+%analysis to synthesize API usage examples.
+
+%While 
+%Robbes and Lanza \cite{robbes08}, and Hou and
+%Pletcher~\cite{hou-icsm11} 
+%There exist deterministic approaches to improve {\em code completion,
+%  code search, and method suggestion} by~using recent editing
+%history~\cite{robbes08,hou-icsm11}, cloned~code \cite{hill04},
+%developer usage history~\cite{mylyn06}, API
+%usages~\cite{denys-rsse10}, parameter filling~\cite{zhang-icse12},
+%interactive code generation~\cite{omar12}.
+% Hill and Rideout \cite{hill04}
+%use small cloned code for code completion. 
+%Others aim to complete parameters of a call~\cite{zhang-icse12} or
+%generate the details on APIs in use in
+%IDEs~\cite{omar12}. 
+%Strathcona~\cite{strathcona05} extracts structural context of the
+%current code to suggest~examples. 
+%Exemplar~\cite{examplar12} is an engine to search for relevant
+%applications. It considers the used API calls and their data
+%flows. Buse and Weimer~\cite{weimer-icse12} use path sensitive
+%dataflow analysis to synthesize API usage examples. Other code search
+%engines allow users specify constraints among
+%inputs/outputs~\cite{reiss-icse09,stolee12}.  Baker parses code
+%snippets to link them to API documentation~\cite{reid-icse14}.
+
+
+%%Precise~\cite{zhang-icse12} completes the parameter list of an API
+%%call by using a parameter usage database.
+%%In Omar {\em et al.} \cite{omar12}, interactive code generation
+%%interfaces are added to code completion menu to give details on APIs
+%%in~use. Robbes and Lanza \cite{robbes08} use recent editing history
+%%and Hill and Rideout \cite{hill04} use small {\em cloned fragments} to
+%%improve code completion.  Frequencies of past uses have been used to
+%%rank API calls~\cite{hou-icsm11}.
+%%Strathcona~\cite{strathcona05} extracts structural context of the
+%%current code and finds relevant examples. Mylyn~\cite{mylyn06} learns
+%%from a developer's personal usage history and suggests related
+%%methods.
+
+%Other strategies have been proposed to improve code completion. Hill
+%and Rideout~\cite{hill04} use small {\em cloned fragments}~for code
+%completion. It matches the fragment under editing with small
+%similar-structure code clones. Robbes and Lanza \cite{robbes08}
+%introduced six strategies to improve code completion using {\em recent
+%histories} of modified/inserted code during an editing session and on
+%the methods and class hierarchy related to the current variable. Hou
+%and Pletcher~\cite{hou-icsm11} found that ranking method calls by
+%frequency of past use is effective. Eclipse~\cite{eclipse} and
+%IntelliJ IDEA~\cite{intellisense,informer} support {\em
+%template-based} completion for common constructs/APIs
+%(\code{for}/\code{while}, \code{Iterator}).
+
+%MAPO~\cite{zhong2009} mines API patterns and suggests associated {\em
+%  code examples}.
+%It does not support auto-completion. 
+
+
+%%%that are frequently and recently interacted by him/her.
+%%%This type of
+
+
+%Two ICSE'12 papers
+
+%%Topic model is another class of language models. The basic idea behind
+%%topic modeling is that documents can be seen as the mixtures of topics
+%%(or themes). A topic could be defined as a distribution over
+%%words. Then, the high probable words of a topic will likely be used,
+%%and thus, co-occur frequently in the documents about that topic. This
+%%section explains \emph{Latent Dirichlet Allocation} (LDA) \cite{lda},
+%%a widely used topic model.
+%%
+%%LDA models a corpus by $K$ topics. Each topic is a distribution over
+%%all the words of a vocabulary $V$, and this \emph{word distribution}
+%%is a sample of Dirichlet distribution $\rm{Dir}(\beta, V)$. Each
+%%document in the corpus has a distinct \emph{topic proportion} $\theta$
+%%which is a multinomial distribution sampled from Dirichlet
+%%distribution $\rm{Dir}(\alpha, K)$. LDA assumes the documents to be
+%%generated via the following procedure. First, the model samples $K$
+%%multinomial distributions $\phi_k$ from $\rm{Dir}(\beta, V)$ and
+%%uses each as the word distribution for a topic. Those topics are
+%%shared by all documents in the collection. Then, for each document, it
+%%samples $\rm{Dir}(\alpha, K)$ to get a topic proportion
+%%$\theta$. Unlike $n$-gram model, topic model assumes that the
+%%generating probability of a word is dependent on the document-wise
+%%topic proportion and the corpus-wise word distribution of topics,
+%%rather than the local context. Therefore, for each position $i$ in
+%%that document, a topic assignment $z_i$ is sampled from $\theta$ to
+%%determine the topic about which the actual word $s_i$ at position $i$
+%%describe. Then, $s_i$ is selected according to the word distribution
+%%of topic $z_i$. That is, $P(s_i|z_i) = \phi_{z_i}(s_i)$.
+%%
+%%The generating probability of a document is thus integrated over all
+%%possible topic proportions and topic assignments: $$P(s) = \int
+%%(\prod_i \sum_{k} \theta_k \cdot \phi_k(s_i)) \cdot p(\theta)d\theta$$
+%%Note that the generating probability of each word is independent and
+%%is computed by summing over all possible topic assignments for that
+%%word.
+%%
+%%LDA and more sophisticated types of topic model have been adapted for
+%%source code~\cite{baldi08}. The recovered topics are often interpreted
+%%as technical concerns where each concern involves some functionality
+%%of the system. To build a vocabulary, those existing approaches
+%%perform post-processing of lexical analysis results in which
+%%identifiers, string literals, and comments are usually broken into
+%%single words and numeric literals, special symbols, and stop words
+%%(e.g. ``a'', ``an'') are discarded.
+
+
+%In this process, the hyper-parameter
+%$\alpha$ specifies the sparseness of per-document topic
+%proportion so that smaller $\alpha$ forces a document to have a smaller
+%number of dominant topics. Similarly, $\beta$ specifies the sparseness
+%of topics, with smaller $\beta$ yielding a smaller number of dominant
+%words per topic. In practice, these $\alpha$ and $\beta$ are
+%pre-chosen before learning the topic structure.
+
+%To select the mixture of topics in step 1, LDA uses a Dirichlet distribution, placing a Dirichlet prior $\alpha_t$ on the proportion $\theta_t$ of each topic $t$. Here, $\alpha_t$ is a hyperparameter that specifies the prior proportion of topic $t$ in the document before having observed any word from that document. In practice, a common strategy is to use a single hyperparameter $\alpha$ for all topics, assuming no prior knowledge about the preference for any topic. Similarly, for a given collection of documents, topics are generated by using a symmetric Dirichlet distribution with a single hyperparameter $\beta$ as the Dirichlet prior.
+
+%The main task of topic modeling is to automatically infer the topic structure of the corpus.
+
+%While the words in all documents are observed in the corpus, other
+%structures such as topics, the topic proportion for each document, and
+%the topic assignment for each word in such documents are hidden (also
+%called \emph{latent variables}). Therefore, the central problem of
+%topic modeling is to reverse the generative process, i.e. infer the
+%hidden topic structure that most likely generated the documents. This
+%process is often referred to as learning topic model. Its main
+%computational problem is to compute conditional probability of the
+%latent variables given the observed words. Because exact computation
+%of conditional probability in this case is intractable, approximation
+%methods are used instead. Two most common categories of approximation
+%algorithms for topic modeling are variational inference~\cite{Blei03,
+%Blei06correlatedtopic}, and sampling-based algorithms. In our
+%experiments, we used Gibbs sampling~\cite{Porteous:2008}, the most
+%commonly used sampling based algorithm for topic modeling. The Gibbs
+%sampling algorithm is simple, relatively fast, and in addition, it
+%directly outputs the topic assignments of the words in a document,
+%which we use to compute the topic-based metrics for our defect
+%prediction model.
+
+
+%In contrast, other approaches for pattern detection rely on the
+%{\bf deterministic pattern detection} algorithms. 
+
+%\noindent {\bf Deterministic pattern detection.} Many approaches use
+%such data structures as pairs, sets, trees, and graphs to model
+%various abstractions in code. {\em Deterministic}
+%pattern mining methods are used, e.g., 
+
+
