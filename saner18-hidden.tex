@@ -1,0 +1,104 @@
+\subsubsection{Accuracy when Varying Size of Hidden Layer}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=3.5in]{sensitivity_size.pdf}
+\caption{Top-$k$ Accuracy with Varied Numbers of Hidden Nodes}
+\label{sensitive}
+\end{figure}
+
+As illustrated in Fig.~\ref{contextfig}, {\tool} uses the hidden
+layer with three DNNs in which one DNN is for the lexical context and
+the other two are used to incorporate the syntax and semantic contexts
+for each lexeme in a sequence. Because our design choice is to take
+the same length 
+%($n$-1) 
+of the windows of sequences at all three levels as the contexts, we
+also set the numbers of hidden nodes in those DNNs for those levels as
+equal ($M$ = $M_{lex}$ = $M_{syn}$ = $M_{sem}$). That number
+represents the dimensions of the new continuous-valued spaces.
+%into which the $n$-1 prior lexemes, syntaxemes, and sememes are
+%projected.
+In this study, we set $n$=4, varied $M$, and measured accuracy.
+
+%We set the numbers of nodes in those DNNs at the hidden layer as equal
+%($M$ = $M_2$ = $M_{syn}$ = $M_{sem}$) because their inputs represent
+%$n$-1 prior lexemes, syntaxemes, and sememes, respectively. That
+%number represents the dimensions of the new continous-valued space
+%into which the $n$-1 prior lexemes, syntaxemes, and sememes are
+%projected.
+
+%As in DNN LM~\cite{DNNLM12}, we expect that each node in the hidden
+%layer represents a cluster of entities (i.e., lexemes, syntaxemes, or
+%sememes) that are grammatically or semantically related because such
+%entities will be projected into nearby locations along some dimensions
+%in the new continous-valued space.
+
+As seen in Fig.~\ref{sensitive}, top-$k$ accuracy
+with larger $k$'s ($k$=10 or 20) does not change much when the number of
+hidden nodes $M$ increases. That is, the result is quite stable and
+not affected much by $M$. The shape for the graphs of the top-$k$
+accuracy values with smaller $k$ from 1--5 has the same trend.
+%The shapes of the graphs for all top-ranked accuracy are
+%consistent.
+With smaller $k$ values (1--5), as $M$ is small ($M$<200), accuracy is
+lower. This is reasonable because the number of dimensions in the new
+space might be too small to distinguish a large number of inputs
+representing the input entities (i.e., lexemes, syntaxemes, and
+sememes) and a large number of sequences.
+%Thus, there are quite different inputs being mapped to the nearby
+%locations in the new spaces.
+%
+As $M$ increases, accuracy gradually increases. When $M$ is larger
+than or equal to 900, accuracy is more stable. This suggests that
+around that number, we could get high, stable accuracy. The number of
+dimensions in these ranges now might provide sufficiently fine
+granularity to distinguish the inputs in this~case.
+
+
+
+
+
+
+% REMOVED 1 sentence
+%Such ranges are slightly different among top-ranked accuracy.
+%The accuracy for different top ranks have increased consistently and
+%peaked at just slightly different $M$.
+%As $M$ is larger ($M$>900), accuracy does not change much.
+%We used $M$=900 for other experiments to save running time without
+%sacrificing much accuracy. 
+%Overfitting will occur when $M$ is large in comparison to the number
+%of inputs~\cite{dnnbook}.
+
+
+%------------------
+%Figure~\ref{sensitive} shows the result. The shapes of the graphs for
+%all top-ranked accuracy are consistent. As the number of nodes in the
+%hidden layer $M$ is small ($M$<200), accuracy is low. This is
+%reasonable because the number of dimensions in the new space is too
+%small to distinguish a large number of inputs representing the 
+%entities (i.e., lexemes, syntaxemes, and sememes) and a large number
+%of sequences. Thus, there are quite different inputs being projected
+%to the nearby locations in the new space.
+%
+%As the number of hidden nodes increases, accuracy increases as well,
+%reaches its peak and becomes stable at around 900. The accuracy for
+%different top ranks have increased consistently and peaked at just
+%slightly different $M$. This suggests that after that number, we could
+%get high, stable accuracy. The reason might be because the number of
+%dimensions in these ranges provide sufficiently fine granularity for
+%the correct projection of the inputs in this subject project.
+%
+%As $M$ is larger ($M$>900), accuracy does not change much. Thus, we
+%used $M$=900 for other experiments to save running time without
+%sacrifying accuracy.
+%-------------------------
+
+
+
+%Therefore, we save running time by not increasing much the number of
+%hidden nodes.
+
+%because the nuanced topics appear and topics may begin to overlap
+%semantically with each other. It causes a document to have many topics
+%with similar proportions. This overfitting problem degrades accuracy.

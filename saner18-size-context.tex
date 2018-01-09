@@ -1,0 +1,51 @@
+\subsubsection{Accuracy with Different Sizes of Contexts}
+
+
+
+We conducted an experiment to study the impact of the size~$n$ of the
+contexts on {\tool}'s accuracy. Table~\ref{nsizeaccuracy} shows
+results for different values of $n$. As seen, when increasing the size
+of the context window (for all three levels of lexemes, syntaxemes,
+and sememes) from 2 to 4, the accuracy increases since more contexts
+are captured for suggestion (especially, accuracy increases much for
+$n$ from 2 to 3). However, {\em when $n=4$--$7$, the
+accuracy~is~stable}. When $n > $ 7, the number of sequences is
+extremely large for DNN, causing scalability problem.  This suggests
+us to use $n$=4 in other experiments.
+%
+This result is consistent with the finding in $n$-gram for texts in
+NLP in which $n$-grams for $n$=3--6 give best
+performance~\cite{jurafsky14}.
+%
+
+Another interesting observation is that despite that the context size
+$n$ is only 4 (which might not contain all syntaxemes of a syntactic
+unit, \eg a \code{for} loop), {\tool} is still able to capture well
+the current syntactic unit because each syntaxeme allows {\tool} to
+represent multiple lexical tokens.
+%the beginning of a syntactic unit. 
+For example, the syntaxemes \code{FOR} or \code{FORINIT} indicate the
+start of a \code{for} statement. The model uses it to sufficiently
+help predict the next token within the context defined by the~unit.
+
+\input{saner18-tableaccuracy-n-context}
+
+For $n$=4, we also measured top-1 accuracy for the second token of the
+pairs of the syntactic tokens (\eg \code{do}
+and \code{while}, \code{try} and \code{catch},
+\code{\{ and \}}, $($ and $)$, etc.) and a few pairs of popular API elements
+(\eg \code{Iterator.hasNext}/\code{Iterator.next},
+\code{Enumeration.hasMoreElements/Enumeration\-.nextElement}, and
+\code{StringTokenizer\-.hasMoreTokens/StringTokenizer.\-nextToken}).  We
+found that with even such a small window of contexts, {\tool} is able
+to capture the associations between pairs of related, yet distant code
+tokens with a top-1 accuracy from 62--75\%. 
+
+
+
+
+%This is expected because DNN LM with context~\cite{huang12} has that
+%capability for natural-language texts. This is important for a
+%SMT-based code migration engine to produce syntactically correct
+%code.
+
