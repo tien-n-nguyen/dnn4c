@@ -1,0 +1,87 @@
+\subsection{Accuracy With Different Contexts}
+
+\input{saner18-table-sen-different-contexts}
+
+In this experiment, we varied different context components in our
+model and measured accuracy of newly configured
+models. Table~\ref{contextaccuracy} shows the result. The first row is
+for {\tool}~configured with only lexemes. This corresponds to the DNN
+LM model in~\cite{DNNLM12}, but operates on lexemes. The second row is
+for the model with both lexemes and syntaxemes. The third row is for
+the model with both lexemes and sememes. The last row corresponds to
+{\tool} model with all three types of features.
+%We set the context's size $n$=4.
+
+As seen, the models with contexts achieve better accuracy than the DNN
+LM that treats source code as textual tokens and does not consider
+syntactic and type contexts.
+
+{\bf {\tool} with all three levels achieves even higher
+accuracy} (last row). In comparison to the state-of-the-art DNN LM
+(operating on lexemes), {\tool} has good relative improvement in
+top-1 accuracy: 25.2\% (10\% absolutely).
+%16.3\% (top-1) and 6.1\% (top-5). 
+%
+Importantly, it achieves high accuracy. In one out of two cases,
+with a single suggestion, {\tool} correctly suggests the
+next token. 
+%In 3 out of 4 cases, the correct token is in the list of 4
+%suggestions from {\tool}}. 
+With~5 suggestions, it suggests the correct token in 77.6\% of the
+cases.
+%
+%
+With the addition of only syntaxemes, {\em the relative improvement in
+top-1 accuracy (i.e., with a single suggestion) is 16.5\% (6.5\%
+absolute improvement)}. 
+
+%There is an interesting observation.  Despite that the context size
+%$n$ is only 4 (which might not contain all syntaxemes of a syntactic
+%unit, e.g., a \code{for} loop), {\tool} is still able to capture the
+%beginning of a syntactic unit. For example, the syntaxemes \code{FOR}
+%or \code{FORINIT} indicate the start of a \code{for} statement. The
+%model uses it to sufficiently help predict the next token within the
+%context defined by the unit.
+
+%
+%8.27%
+%Examining the cases, we can see that with the syntaxemes as syntactic
+%context, the lexical tokens relevant to surrounding ones are ranked
+%higher because the grammar rules have restricted the valid syntactic
+%units at a suggestion point. 
+%Concrete examples are presented in Section~\ref{cases}.
+%
+%Moreover, 
+
+Combining type context via sememes with lexemes improves
+better than adding syntactic context via syntaxemes to lexemes
+(i.e.,
+\code{Lex+Sem} $>$ \code{Lex+Syn}). The model \code{Lex+Sem}
+relatively improves 18.1\% at
+%and 1.5\%
+top-1 accuracy over the model \code{Lex}.
+% and \code{Lex+Syn}, respectively.
+%
+After investigating, we found that data types and token types allow
+\code{Lex+Sem} to rank the correct token at a suggestion point
+higher than \code{Lex+Syn} with the syntactic context of surrounding
+syntactic units. For example, pairs of API calls that often go
+together (e.g., \code{Scanner.hasNext} and \code{Scanner.next}) are a
+good foundation to suggest the second one if the first one is
+encountered. In this case, \code{Lex+Syn} ranks multiple
+identifiers (for method calls) higher than other types of
+tokens, but \code{Scanner.next} is not the top one.
+
+%After investigating, we found that data types and token types limit
+%more the potentially valid tokens at a suggestion point than the
+%syntactic context of current and containing syntactic units. In some
+%suggestion cases, with syntactic context, the list of candidate tokens
+%is in the tens of tokens. However, the sememes with data and token
+%types can shorten that list to a few candidates. For example, pairs of
+%method calls that often go together are a good indication for
+%suggesting the second one if the first one is encountered.
+
+
+
+
+

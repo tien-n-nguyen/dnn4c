@@ -1,0 +1,116 @@
+%\section{Feature Extraction}
+
+%We process all source files in every subject project. 
+
+%We use 10-fold cross validation on each project. 
+%We use the same setting as in the previous work on LM for source code.
+
+To have the codebase for training, we collected several open-source
+Java projects from SourceForge that have long histories and are
+popularly used. For comparison, we selected the projects that were
+used~in the state-of-the-art language model in~\cite{natural} (see Table
+{\ref{systemtab}}).
+
+We used the same procedure for evaluating the model's accuracy as in
+the existing work~\cite{natural,tu-fse14,fse13}. 
+Source files in a project are divided into 10 folds with equal numbers
+of LOCs. One fold is used for testing and the others are used for
+training. To study the impacts of features in a model, we integrated
+the combinations of features and performed training and testing for
+each newly built~model.
+
+\noindent {\bf Training.} 
+For each source file,
+%in the training set, 
+%we perform feature extraction. 
+we use Eclipse for parsing and type analysis.
+%%If a file is not compiled, we used PPA tool~\cite{ppa08} to perform
+%%partial parsing as explained.
+%PPA attempts to parse as many tokens as possible to build the abstract
+%syntax tree (AST). 
+%%PPA also performs semantic analysis including type resolution. 
+Syntaxeme sequences are constructed according to the procedure
+presented in Section~\ref{syntaxsec}.
+% and Table~\ref{tab:javastruct}.
+The sememe sequences are built from the result returned by Eclipse.
+%The remaining unparseable code tokens are directly converted to their
+%corresponding syntaxemes. 
+If some tokens are unparseable or type information is not
+available, the lexical tokens are annotated with the special
+symbol \code{LEX}.
+%
+%Then, the unique tokens are collected into vocabularies at the three
+%levels.  
+For a pre-defined value of $n$, we collect into vocabularies and index
+the $n$-grams of lexemes, syntaxemes, and sememes. For each lexical
+token $lex_i$ in an $n$-gram, we build its {\em index vector} where
+only the index of that token is set to 1.
+% (Figure~\ref{dnnfig}).  
+All the vectors for $lex_i$s
+%each $n$-gram 
+are concatenated. Similarly, we build the index vectors for the
+syntaxeme and sememe sequences. Finally, the concatenated vectors are
+used for~training.
+
+\noindent {\bf Prediction.} 
+For a source file in the testing set, our evaluation tool traverses
+the sequence of its code sequentially. At each position of the
+$i^{th}$ token, considering a fixed set of $n$-1 prior tokens, the
+current language model is used to compute the top $k$ most likely code
+tokens $c_1$, $c_2$, ..., $c_k$ for that position.
+%the prior $n$-1 code tokens.
+%
+Since the previous tokens might not be complete, we used PPA
+tool~\cite{ppa08} to perform partial parsing to produce the AST, and
+semantic analysis for the code sequence $s$ from the starting of the
+file to the current position.~From the AST and type information
+returned from PPA, we build the sequences of syntaxemes
+(Section~\ref{syntaxsec}) and sememes (Section~\ref{sememesec}). 
+%The remaining unparseable code tokens are handled as special ones.
+%
+We then used the language model under investigation to suggest the
+next token. If the actual token $s_i$ at position $i$ is among $k$
+suggested tokens, we count this as a hit. The top-$k$ accuracy for
+a code sequence is the ratio of the total hits over the total number
+of suggestions. Total accuracy for a project is computed on all the
+positions in its source files for the entire process.
+
+%\subsubsection{Extracting Source Code Features}
+
+%To extract those contextual features, we use a partial parser (\cite{}) to parse project's source code, 
+%since the current editing code is not complete. The parser analyzes each project's source file to extract 
+%sequential lexical tokens and abstract syntax tree (AST) of that file. The files' ASTs can be used to 
+%extracted sequence of syntactic tokens corresponding to lexical tokens. The parser also uses semantic
+%information to  determine the semantic tokens. The rules of determining syntactic and semantic sequence are
+%determined in section {\ref{}}.
+
+  %The output of our parsing process includes:
+
+%1. All source files, with each file considered a document for Bayesian Model
+
+%2. N-grams of lexical tokens extracted from the sequential lexical tokens of source files
+
+%3. N-grams of syntactic tokens 
+
+%4. N-grams of semantic tokens
+
+%\subsubsection{Representing Features in DNN Model{\tool}}
+
+%According to {\ref{}}, our model has three input levels. At each level, the sequence of $n-1$ tokens  (n-gram)
+%is vectorized before used for calculation. In training, the model also considers the n-th token at predicting location.
+%The model will use all input features to learn (in training step) the parameters of the model and use the features and
+%learned parameters to predict next lexical tokens (in predicting step).
+
+%Since the neural networks has input as concatenation of binary vectors representing tokens, our tool needs at first build representing binary vectors at then concatenate them. 
+
+%The process of vectorization is:
+
+%1. Build dictionaries of all unique tokens in lexical, syntactic and semantic levels. Let we assume the size of each 
+%dictionary is $V_{lex}$, $V_{syn}$ and $V_{sem}$ correspondingly.
+
+%2. For each lexical token $t$, we construct a vector $v_t$ of length $V_{lex}$. All elements of $v_t$ have value of $0$, 
+%except the element at index $i_t$, where $i_t$ is the index of $t$ in lexical dictionary, has value of $1$.
+%All vectors $v_1$, .. $v_{n-1}$ are concatenated and use by {\tool}.
+
+%3. Similarly, we can construct the vectors for syntactic and semantic tokens.
+
