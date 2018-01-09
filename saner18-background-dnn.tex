@@ -1,0 +1,60 @@
+%\subsection{Deep Learning Language Models}
+%\label{dnnbackgroundsec}
+
+
+
+{\bf Neural network language models} (NNLMs) have been explored in
+NLP~\cite{bengio03,schwenk05, schwenk07,mikolov11,mikolov10,
+  sarikaya09}. NNLM has been shown to perform better than $n$-gram
+model due to a key advanced mechanism called {\em word embedding}, in
+which each word is projected into a continuous-valued feature
+space. 
+%
+%Through empirical experiments, researchers showed that with proper
+%training of word embedding, words that are semantically or
+%grammatically related are mapped to nearby locations (at least along
+%some dimensions) in that space~\cite{dnnbook}.
+%
+%NNLM can generalize well to the sequences that do not exist in the
+%training set, but have similar features~\cite{dnnbook}.
+%
+%However, NNLM has high computation cost, which has prevented its wide
+%use in real-world applications. Details on NNLM are
+%in~\cite{sarikaya09,schwenk07}.
+
+Recent research in deep learning brings many advantages for neural
+network. Researchers have conducted experiments to show that DNN
+layers can be trained with proper model configurations to capture high
+abstraction levels of the
+inputs~\cite{mikolov11,mikolov10,le-taslp13,DNNLM12,schwenk05}.
+%A key advantage in deep neural network (DNN) is time efficiency in
+%computation.  DNN can be trained faster. In some
+%models~\cite{rbm-wiki}, each DNN at a layer can be trained
+%independently and connected to one another from the lower to the
+%higher layers. Thus, it can include multiple hidden layers instead of
+%one-layer perceptron.  Many approaches for training large-scale data
+%have been proposed~\cite{mikolov11,schwenk05}.
+%\input{msr17-math-background-dnn}
+%
+The {\em
+recurrent neural network LM} (RNN
+LM)~\cite{mikolov10,hermans13,pascanuGCB13} was also applied to lexical code
+tokens. 
+%
+%RNN LM represents the word history via learning from data with
+%back-propagation through time. The input at the iteration $t$, $x(t)$,
+%is formed by concatenating the vector representing the current word
+%$w$, and the output from the context/history layer $s$ at the previous
+%iteration $t$-1. The vector for the new context is computed from the
+%input $x(t)$, and the output vector is computed from that new context
+%with an activation function. 
+By using recurrent connections, information can cycle back for longer
+than $n$-1 prior words~\cite{mikolov10}. 
+%Thus, RNN LM does not use a limited size of history.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.45\textwidth]{dnnlm.pdf} %0.42
+\caption{Deep Neural Network Language Model (DNN LM)~\cite{DNNLM12}}
+\label{dnnlmfig}
+\end{figure}

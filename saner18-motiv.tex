@@ -1,0 +1,128 @@
+%\subsection{Adding syntactic and semantic contexts}
+
+\subsection{Motivation}
+
+%%%Source code in a program has well-defined syntax and semantics, which
+%%%could be useful in improving DNN language model.
+
+%Syntactic and semantic contexts from the generated tokens could be
+%useful in predicting the next token in the current file.
+
+%\vspace{0.04in}
+\noindent {{\bf Syntactic context.}
+%
+A programming language has well-defined grammatical rules. There are
+often a limited number of valid syntactic structures that can occur at
+a certain point in a program. For example, in Java, in the left hand
+side of an assignment, one can~only write a name, a field access, or
+an array access. As another example, after \code{`for ('}, we must
+have a \code{forInit}, which can only be either a list of statement
+expression or a local variable declaration. Thus, if a model can
+recognize the current syntactic unit and/or surrounding/containing
+units of the current location, it could give higher scores to the
+potential, valid syntactic units. As a consequence, the potentially
+valid tokens within those syntactic units at the suggestion point
+would be ranked higher. Thus, {\em prediction accuracy} can be
+improved. Taking another example, if a model recognizes the current
+location (denoted by an underscore) is right after the condition
+expression of a \code{do} statement: \code{`do ... while ( expression
+  ) \_'}, it would likely rank the token ';' higher than other tokens
+such as '\{'. However, if the containing statement is a \code{while}
+statement: \code{`while ( expression ) \_'}, a block statement is
+likely to follow and the token `\{' would likely be chosen.
+%
+%Moreover, the grammar rules of a language require the co-occurrences
+%of pairs of tokens (e.g., \code{do/while}). If the LM is used for {\em
+%  code migration}, with syntactic context, it can produce more
+%syntactically correct code. Not capturing program's syntax is a key
+%limitation for phrase-based statistical machine translation (SMT) with
+%$n$-gram LM~\cite{fse13}.
+
+
+%Using only a small window of {\em lexical} code tokens is challenging
+%in capturing such syntactic context to help in code suggestion. The
+%tokens within a syntactic unit might be far apart and cannot be well
+%captured within short sequences with reasonable sizes. Increasing
+%their lengths would face scalability issues, while the model still
+%cannot deal with syntactic units with longer sequences of tokens.
+
+%Using only $n$-grams of lexical code tokens is challenging in
+%capturing such syntactic context to help in code suggestion. The
+%tokens within a syntactic unit might be far apart and cannot be well
+%captured within $n$-grams with reasonable sizes. Increasing the value
+%of $n$ would face scalability issues, while the model still cannot
+%deal with syntactic units with longer sequences of tokens.
+%-----------------------------------------
+
+%Finally, a $n$-gram crossing the boundary of syntactic units (e.g.,
+%across two blocks) might not make sense.
+
+%In general, the tokens within the same syntactic unit might be far
+%apart and cannot be captured within $n$-grams with reasonable
+%sizes. Increasing the value of $n$ would face scalability issues,
+%while~the~model still cannot deal with syntactic units with longer
+%sequences of tokens.
+
+\vspace{0.03in}
+\noindent {\bf Type context.} A model for source code could also be
+improved with the integration of the semantic information such as data
+types and token types.
+% (i.e., field and method declarations, field
+% accesses, method calls, variables, etc.).
+First, we could reduce the number of false positive cases in
+existing LMs because such context could help a model to avoid
+mistakenly considering code for different tasks as the same as explained earlier.
+%
+%For example, an access to the field \code{next} of a \code{LinkedList}
+%in \code{x.next} differs from a call to the method \code{next} of a
+%\code{Scanner}.
+Second, with type information, we could also reduce the false negative
+rate in existing LMs because we could {\em capture patterns at higher
+  levels of abstraction}.
+%
+For example, both \code{`int n=a.size()'} and \code{`int
+  m=arr.size()'} are two instances of a pattern ``{\em get the size
+  of an \code{ArrayList} and assign to an \code{int} variable}'',
+despite that the variables' names are different.
+% in two places.
+%
+%Moreover, data types also allow a model to capture the frequent code
+%patterns
+%involving API usages. For example, an instantiation of
+%\code{FileInputStream} can be followed with a call to~\code{close}.
+%As another example, a model could capture the pattern ``the parameter
+%of \code{System.out.println} is often a \code{String} or \code{int}''.
+%
+When a pattern at a higher level is better captured, a model would
+{\em estimate better the occurrence probability of code
+  sequences}. Thus, the above SE tools are
+more accurate, \eg a {\em code synthesis could generate code with
+  higher regularity}.
+
+%a   high occurrence probability}.
+%
+%However, using only a window of {\em lexical} code tokens is
+%challenging in capturing the above contexts since related tokens might
+%be far apart. Increasing the sequences' sizes would face scalability
+%issues.
+
+%is expected to better suggest the next code token.
+
+%using only a window of {\em lexical} code tokens is challenging in
+%capturing the above contexts since tokens of a syntactic unit~might be
+%far apart. Increasing the sequences' sizes would face scalability
+%issues.
+
+%with data type information, a model could avoid mistakenly considering
+%code of different purposes as the same, e.g., \code{x.next} for
+%accessing to the field next of a \code{LinkedList} as oppose to
+%\code{x.next} for calling to the method \code{next} of a
+%\code{Scanner}. Thus, the related APIs in a usage pattern (e.g.,
+%\code{next}, \code{hasNext} of \code{Scanner}) could be
+%captured. Importantly, if the token type (e.g., variable, method call)
+%is also considered, patterns at higher abstraction can be
+%detected~\cite{fse13}. For example, both \code{l=s.length()} and
+%\code{len=str.length()} are two instances of a pattern ``{\em get the
+%  length of a string variable and assign to an integer one}''. If a
+%completion request is after \code{str}, \code{length} will be a likely
+%candidate because its return type is \code{int}.

@@ -68,7 +68,8 @@ basic units, a language model $L$ aims to compute $P(s|L)$, which is
 the probability that a sequence $s$ of the words in $V$ is
 ``generated'' by the model following a generative process in
 $L$. To estimate such probability facilitates several
-algorithms in SE applications~\cite{white-msr15}.
+algorithms in SE applications.
+%~\cite{white-msr15}.
 
 %$N$-gram model is one of the most popular statistical
 %LMs~\cite{manning99,dnnbook}. It assumes that a sequence of
@@ -165,23 +166,23 @@ higher-level, abstract representations of the input~\cite{dnnbook}.
 Applying DNN LM to source code can improve accuracy in those SE
 applications. Toward that goal, 
 %White {\em et al.}
-a few approaches~\cite{white-msr15} have directly applied the recurrent
-NN-based LM on textual code tokens.
-It treats code tokens simply as words. 
-However, the model has difficulties in dealing with the ambiguities in
-the names of program elements and API elements (classes, method calls,
-and field accesses).  For example, the model could mistakenly detect
-the following two different occurrences as belonging to the same
-pattern: \code{x.next} for {\em accessing to the field} \code{next}
-{\em of a \code{LinkedList}} as opposed to \code{x.next} for {\em
-  calling to the method} \code{next} {\em of a \code{Scanner}}
-object. Moreover, the occurrences with different variables' names,
-which should be considered as the same pattern, are not recognized so.
-For example, both \code{l=s.length()} and \code{len=str.length()} are
-two instances of the pattern ``{\em get the length of a string
-  variable and assign to an integer}''. However, the model cannot
-detect them as the same pattern. Therefore, it cannot learn from one
-place and recommend for another place.
+a few approaches~\cite{white-msr15} have directly applied the
+recurrent NN-based LM on textual code tokens.  It treats code tokens
+simply as words.  However, the model has difficulties in dealing with
+the ambiguities in the names of program elements and API elements
+(classes, method calls, and field accesses).  For example, the model
+could mistakenly detect the following two different occurrences as
+belonging to the same pattern: \code{x.next} for {\em accessing to the
+  field} \code{next} {\em of a \code{LinkedList}} as opposed to
+\code{x.next} for {\em calling to the method} \code{next} {\em of a
+  \code{Scanner}} object. Moreover, the occurrences with different
+variables' names, which should be considered as the same pattern, are
+not recognized so.  For example, both \code{l=s.length()} and
+\code{len=str.length()} are two instances of the pattern ``{\em get
+  the length of a string variable and assign to an
+  integer}''. However, the model cannot detect them as the same
+pattern. Therefore, it cannot learn from one place and recommend for
+another place.
 
 %\subsection{Our Solution}
 

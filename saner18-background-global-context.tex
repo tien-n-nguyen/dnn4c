@@ -1,0 +1,50 @@
+%\begin{figure}[t]
+%\centering
+%\includegraphics[width=0.46\textwidth]{huang2.pdf} %0.46
+%\caption{Global Context-Aware DNN Language Model~\cite{huang12}}
+%\label{huangfig}
+%\end{figure}
+
+As Huang {\em et al.}~\cite{huang12} pointed out, despite 
+successes, all above deep learning LMs 
+%(NNLM, DNN LM, and RNN LM) 
+have a major limitation that they use only {\em one representation
+  space} for the words which might have different meanings in
+  different contexts. Putting the vectors of the current words and
+  those of the context words as input of a {\em single NN} (called a
+  {\em single prototype}) cannot capture well different meanings of a
+  word in multiple contexts: {\em ``Single-prototype models cannot
+  represent any one of the meanings well as it is influenced by all
+  meanings~of~a word}''~\cite{huang12}.
+%
+They proposed a new model that overcomes that
+limitation by using multiple NNs to capture different senses and
+usages of a word.
+
+
+%The {\em local context} of previous words of a word $w$
+%(\eg ~\code{bank}) is incorporated with the {\em global context} of
+%entire document containing the word $w$ (\eg \code{river},
+%\code{shore}, \code{bank}, \code{water}, etc). The model has two
+%scoring components computed by two NNs that contribute to the final
+%score of a pair of word sequence $s$ and document $d$. 
+%The score from the local context is computed from an NN with one
+%hidden layer whose input is the list of concatenated vectors $[x_1,
+%x_2,...,x_m]$ representing the words~in~$s$.
+%For the score from global context, they use a similar NN. However,
+%the vector $x_m$ for the current word is concatenated with
+%the global semantic vector $c$.
+%$c$ is computed as the weighted average document vector, \ie the
+%vector of the words in the document $d$ with each element being the
+%enbedding value of each word adjusted with its importance (computed
+%via Tf-idf). The final score is the sum of the two scores. 
+
+In this work, inspired by that, we incorporate syntactic and type
+contexts in source code to address the ambiguity issue with the names
+of program elements in source code.
+
+%Generally, the names of~program elements such as variables, fields,
+%methods, classes are ambiguous across methods or projects. The names
+%of API elements in different classes or libraries are also
+%ambiguous~\cite{fse13}. We expect that incorporating contexts helps
+%improve the language model for code.

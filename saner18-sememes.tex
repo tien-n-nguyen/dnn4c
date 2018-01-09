@@ -1,0 +1,197 @@
+\subsection{Type Context}
+\label{sememesec}
+
+%\input{semantic}
+
+%\input{sememe}
+
+%\subsection{Integrating Semantic Information}
+
+%The success of SMT relies much on the ability of a model to learn the
+%mappings between respective source code in both languages, and apply
+%to translate for the new code.
+
+%Because source code has well-defined semantics, {\tool} needs to
+%capture/learn the meaningful pieces of code and their corresponding
+%code in the target language at a high level of abstraction. Currently,
+%we encode and integrate local semantic information.
+
+%We aim to integrate semantic information into SMT 
+
+%To capture/learn the mappings of meaningful pieces of code including
+%API mappings and the mappings of concrete names of variables/fields,
+%we encode semantic information to the source code.
+
+To capture the type context at a fine-grained level, we encode
+such information to the code tokens.
+%
+To do that, for a sequence of code tokens, we build a sequence of
+type annotations, called {\bf sememes}, which are the symbols
+representing type information. We adopted sememes from an existing
+work, SLAMC \cite{fse13}.
+%
+%\begin{Definition}[Sememe]
+{\em The \emph{sememe} of a code token at a code location is a
+  structured annotation representing its type information,
+  including its {\bf token type/role} and {\bf data type}}~\cite{fse13}.
+%\end{Definition}
+
+\begin{table}[t]
+  \centering
+  \footnotesize
+%  \tabcolsep 6pt
+  \caption{Examples of Sememes~\cite{fse13}}
+  \vspace{-0.06in}
+    \begin{tabular}{llll}%{l@{}l}
+    \addlinespace
+    \toprule
+    & {\bf Token} & \textbf{Token Role} & \textbf{Sememe} \\
+    \midrule
+    1 & \code{Iterator} & data type &  TYPE[Iterator]  \\
+    2 & \code{iter} & variable   &   VAR[Iterator]   \\
+    3 & \code{``Vancouver''} & literal   &  LIT[String] \\
+%    MethDecl  & \code{indexOf} $\rightarrow$ FUNC[String,indexOf, \\
+%              &    \quad \quad \quad \quad \quad \quad \quad  TYPE[String] PARA[String],int]  \\
+    4 & \code{println} & method call  &  CALL[System,println,1,String,void]  \\
+    5 & \code{a} & parameter   &  PARA[ArrayList]   \\
+    6 & \code{length} & field access    & FIELDACC[String[],length]  \\
+    7 & = & operator &  OP[assign]  \\
+    8 & null & special literal   & NULL\\
+    \bottomrule
+    \end{tabular}%
+  \label{tab:stoken}%
+\end{table}%
+
+%
+Specifically, {\tool} first encodes the data types of code tokens if
+they are available. If semantic analysis is not successful, lexical
+tokens are kept and annotated with the special sememe \code{LEX}.
+%Tien
+%%With that, it could avoid mistakenly considering code of different
+%%purposes as the same.
+%e.g., \code{x.next} for accessing to the field \code{next} of a
+%\code{LinkedList} as oppose to \code{x.next} for calling to the method
+%\code{next} of a \code{Scanner}.
+%The {\em data type} information is recorded for variables, fields, and
+%literals. For a method, its signature including its name, enclosing
+%class name, return type, parameters and their types are recorded.
+% e.g., whether they are {\em field} and {\em method
+%  declarations, field accesses, method calls, variables}, etc. 
+%
+Second, {\tool} records the token types. Token
+type refers to the role of a token in a program.~For example, we 
+encode whether it is a variable, a literal, a keyword, an operator, a
+method call, a method declaration, a field, a field access, a type, or
+a class.
+%Each code token has a role in a program according to the written
+%programming language, e.g., whether it is a {\em type, variable,
+%  literal, operator, keyword, method call, function declaration,
+%  field}, or {\em class}. 
+For example, in \code{``a.length()''}, after semantic analysis,
+\code{a} is recognized as a token with its role of a variable, while
+the role of \code{length} is a method call.
+%
+%For example, \code{java.io.File.exists()} in Java and
+%\code{System.IO.File.Exists(file)} in C\texttt{\#} are the
+%corresponding calls. With token roles, we hope to align them since
+%they are used~to {\em ``check the existence of a file given a file
+%  name''} in Java and C\texttt{\#}.  
+The return types and parameters' types in a method call are also
+captured. 
+
+%Data types help capture frequent API usages. For example, a call to
+%\code{Scanner.hasNext} is often followed by a call to
+%\code{Scanner.next}. That would help better migration of API elements
+%between two languages as shown in~\cite{ase15}.
+
+
+
+%---- old ---
+%\begin{table}[t]
+%  \centering
+%  \small
+%  \caption{Examples of Sememes~\cite{fse13}}
+%    \begin{tabular}{ll}%{l@{}l}
+%    \addlinespace
+%    \toprule
+%    \textbf{Token Role} & \textbf{Token $\rightarrow$ Sememe} \\
+%    \midrule
+%    Data type & \code{LinkedList} $\rightarrow$ TYPE[LinkedList]  \\
+%    Variable   & \code{str}  $\rightarrow$ VAR[String]   \\
+%    Literal    & \code{``Hello World!''} $\rightarrow$ LIT[String] \\
+%    MethDecl  & \code{indexOf} $\rightarrow$ FUNC[String,indexOf, \\
+%              &    \quad \quad \quad \quad \quad \quad \quad  TYPE[String] PARA[String],int]  \\
+%    MethCall  & \code{exists} $\rightarrow$ CALL[File,exists,0,boolean]  \\
+%    ParamName     & \code{filename}  $\rightarrow$ PARA[String]   \\
+%    FieldAcc       & \code{next} $\rightarrow$ FIELD[LinkedList,next]  \\
+%    Operator      & = $\rightarrow$ OP[assign], . $\rightarrow$ OP[access]  \\
+%    Special literal   & 0 $\rightarrow$ ZERO, \code{``''} $\rightarrow$ EMPTY, \code{null} $\rightarrow$ NULL\\
+%    \bottomrule
+%    \end{tabular}%
+%  \label{tab:stoken}%
+%\end{table}%
+%------------------
+
+
+Let us show some examples of sememes for the popular types of tokens
+in Table~\ref{tab:stoken}. If the type resolution for data types,
+variables, and literals is successful, the sememe sequence with the
+type annotation is produced for them. For example, the first three
+rows of Table~\ref{tab:stoken}, the model keeps the data type with the
+annotations \code{TYPE} (data type), \code{VAR} (variable), and
+\code{LIT} (literal). The sememes for a variable and a literal do not
+include their lexemes since they are stored at the lexeme
+sequence. For a method call, its class name (\code{System}), its name
+(\code{println}), the number of passing parameter (1), the parameter's
+type (\code{String}), and the return type (\code{void}) are kept.  That
+sememe sequence represents the semantic annotation of \code{println}.
+
+%Table~\ref{tab:stoken} shows the examples of popular types of sememes.
+%For example, in the code \code{File.exists()}, \code{exists} is a
+%function call and its sememe consists of the symbols `\code{CALL}',
+%`[', its class name \code{File}, its name \code{exists}, the number of
+%  passing parameter (0), the return type \code{boolean}, and ']'. That
+%sememe sequence represents the semantic value of that token.  As
+%another example, the sememe sequence for
+%\code{current.getEdge().setMarked(true)} is \code{VAR[Rectangle] CALL
+%  [Rectangle,getEdge,0,Edge] PE CALL [Edge,setMarked,1,boolean,void]}.
+
+%Let us take an example of different styles in Java and C\texttt{\#}.
+%A pair of method calls becomes two field accesses and an
+%assignment: \code{current.getEdge().setMarked(true)} $\rightarrow$
+%\code{current.edge.marked = true}. The Java sememe sequence\\
+%\code{VARREF[Rectangle] CALL [Rectangle,getEdge,0,null,Edge] CALL
+%  [Edge, setMarked,1,boolean,void]} becomes\\
+%\code{VARREF[Rectangle] FIELD [Rectangle, edge] FIELD [Edge, marked] ASSIGN LIT[boolean]} in C\texttt{\#}.
+
+%{\tool} was able to map and translate those two sememe sequences for a
+%project during our empirical study (Section~IX).
+
+%Table 2
+%A field access is modeled similarly to a method call.
+We also encode special values with special sememes, \eg 
+%a
+%\code{EMPTY} for an empty string, \code{ZERO} and 
+~\code{NULL} for \code{null}, since they could be used for special
+meaning, \eg successful execution or nullity checking. The
+separators and keywords are marked with
+sememes that are the same as their syntaxemes. Two sememes differ by
+one field are considered as distinct.
+
+
+
+%The rationale is that those special values are usually used to
+%indicate special meaning such as a successful execution, nullity
+%checking in a program, etc.
+
+%%%The separator tokens, e.g. semicolons and parentheses, and keywords
+%%%are not associated with semantic information, thus are excluded in
+%%%sememes and handled at the lexical level. If semantic information is
+%%%not available, the lexical token is kept and annotated with the sememe
+%%%of type \code{LEX}. The sememe for a variable and that for a literal
+%%%do not include their lexemes because they are handled at the lexical
+%%%level. {\tool} encodes special values with special sememes such as
+%%%\code{NULL} for the \code{null} value, \code{EMPTY} for the empty
+%%%string, \code{ZERO} for the zero value. The rationale is that those
+%%%special values are usually used to indicate special meaning such as a
+%%%successful execution or nullity checking in a program.
