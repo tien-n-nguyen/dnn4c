@@ -1,0 +1,25 @@
+\subsection{Time Efficiency}
+
+\input{saner18-tab-time}
+
+Table~\ref{tab:time} shows the training time for all models.  All
+experiments were run on a computer with Intel Xeon E5-2620 2.1GHz
+(configured with 1 thread, 32GB RAM for training, and 1GB for
+predicting). As expected, the three NN-based LMs have much higher
+training time than the counting-based models ($n$-gram and
+SLAMC~\cite{fse13}). However, they achieve higher accuracy as
+shown earlier. Each prediction in all models is about 10
+milliseconds.
+%
+To be used in an IDE for code completion, {\tool} can be trained
+off-line. After training, we keep only the weights and bias values for
+DNN nodes. For the largest subject project, the required memory was
+1.2MBs. For suggestion, syntaxemes and sememes are automatically
+computed for the code in the IDE. Three sequences for contexts prior
+to the current point are fed into the trained model for suggestion.
+
+%to predict the next token.
+
+% thus, making {\tool} suitable for interactive use in IDEs.
+
+
