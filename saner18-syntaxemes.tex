@@ -1,0 +1,159 @@
+\subsection{Syntactic Context}
+\label{syntaxsec}
+
+%To extract a syntactic information for the current code, we build a sequence
+%of special syntax symbols, called {\bf syntaxemes}, for the sequence
+%of code tokens in the current file. The current syntactic context
+%consists of $n$-1 syntaxemes prior to the current location.
+%Syntaxemes are the basic units of syntax that represent the
+%(non)terminal symbols on the right hand side of grammar rules of a
+%programming language. For example, let us consider the following:
+
+\input{Table_javastruct-2}
+
+\noindent {\bf Overview.} To represent the syntactic context in source
+code, we encode a source file with a sequence of special syntactic
+symbols, called {\bf syntaxemes}~\cite{ase15}.
+% which was introduced in the work
+%mppSMT~\cite{ase15}. 
+They represent the basic units of syntax that represent the (non)-terminal
+symbols on the right hand sides of grammar rules of a programming
+language. The rationale is that such (non)terminal symbols of the
+grammar rules represent the syntactic structures~in~a program. For
+example, the code \code{`for (int i = 0; i < n; i++) count++;'} is
+encoded into the syntaxeme sequence \code{FOR OP INIT SC EXPR SC
+  UPDATE CP EXPR SC} (will be explained later). The current syntactic
+context consists of $n$ syntaxemes prior to the current code location.
+
+%Following mppSMT~\cite{ase15}, 
+To build the syntaxeme sequence, we traverse the parse tree of a
+program, produce and ensemble the syntaxemes corresponding to all
+(non)terminals. For efficiency, we want to represent only
+coarse-grained syntactic structures and do not go further than
+\code{Expression}.  For example, two expressions \code{i < n} and
+\code{count++} in the above example are not broken down further than
+\code{EXPR} to collect syntaxemes.
+
+\vspace{0.05in}
+\noindent {\bf Details.}  Let us present the function {\bf
+  \code{encode}} that we use to recursively produce the sequence of
+syntaxemes for source code. Table~\ref{tab:javastruct} shows an
+excerpt from~\cite{ase15} of the rules for different Java syntactic
+units to produce the corresponding syntaxeme sequences, which are
+listed on the right window.
+% (the full details can be found in~\cite{ase15}). 
+First, we parse the code to build the parse tree.
+%the important encoding rules for different Java syntactic units to
+%produce the syntaxeme sequences (which are listed on the right
+%panel). Encoding rules for others are similar.
+If the code is not parseable, we use the partial program analyzer 
+PPA~\cite{ppa08} to create the parse tree.
+%, and then we produce the syntaxemes from it. 
+For the unparseable tokens, their lexical tokens are kept and
+annotated with the special syntaxeme \code{LEX}.
+%
+%Let us explain how we produce syntaxemes for a method from its parse
+%tree.
+
+From the parse tree of a method, we produce the syntaxeme sequence as
+follows.
+%
+We traverse the parse tree to match the method declaration and the
+code in the body to {\em recursively} produce the corresponding
+sequences of syntaxemes.  To explore the fine-grained syntactic units,
+the non-terminal symbols (\eg~\code{Statement}, \code{StmtList},
+\code{Block}, \code{CaseSection}, \code{Body}, etc.) in the syntactic
+rules are recursively converted into syntaxemes until expressions are
+encountered or there is no more such non-terminal.
+%
+On the right hand side of Table~\ref{tab:javastruct}, the capital
+letters are the produced syntaxemes and not expanded further,
+and the parts that are called with \code{encode} will be expanded.
+%
+The resulting syntaxemes at all the steps are recursively
+concatenated to create a larger sequence. Finally, the syntaxeme sequence is used
+as a syntactic context.
+%
+Let us take an example.
+
+\begin{lstlisting}[basicstyle=\scriptsize\sffamily, stepnumber=1, numbers=left, language=Java, aboveskip=1pt,  belowskip=1pt, numbersep=-5pt]
+  public int PrintAll(ArrayList a) {
+    for (i = 0; i < a.length(); i++)
+      System.println(a.get(i));
+  }
+\end{lstlisting}
+We encode this method declaration using the rules in
+Table~\ref{tab:javastruct}:\\ \fbox{\code{MOD TYPE ID OP {\bf encode}(ParamList) CP {\bf encode}(Block)}}
+%
+where \code{OP} and \code{CP} are the terminal symbols for the
+separators in the grammar; \code{MOD}, \code{TYPE}, and \code{ID}
+represent the modifier \code{public}, the type \code{int}, and the
+identifier \code{PrintAll}.
+%where \code{MOD}, \code{OP}, \code{CP}, \code{OB}, \code{SC}, and
+%\code{CB} are the modifier, and the terminal symbols in the grammar,
+%\code{ID} representing the identifier \code{ClientQueryResult} and the
+%separators.
+%
+\code{PrintAll} is the lexeme of that \code{ID}, representing
+the method's name.
+%
+\code{ParamList} and \code{Block} are expanded further via other
+rules. For example, \code{Block} is encoded into `\code{OB \code{{\bf
+      encode}(For)} CB}', which becomes \code{OB FOR OP INIT SC EXPR SC
+  UPDATE CP EXPR SC CB} after {\bf encode}(For) is run. Then, \code{a.length()} and
+\code{System.println(...)}  are not expanded further since we
+use sememes for them (Section~\ref{sememesec}).
+%
+\code{ParamList} is for the parameter list and is expanded into the
+sequence `\code{PARAM}' for `\code{ArrayList a}'. We do not expand
+a parameter since we use sememe for it.
+%(Section~\ref{sememesec}).
+
+%We will parse that method declaration as follows:\\
+%\fbox{\code{Modifiers ID OP ParamList CP OB {\bf SuperCall} SC CB}} (1)
+
+%where \code{ID}, \code{OP}, \code{CP}, \code{OB}, \code{SC}, and
+%\code{CB} are terminal symbols in the grammar, representing the
+%identifier \code{ClientQueryResult} and the separators.
+%\code{ClientQueryResult} is the lexeme of that \code{ID}, representing
+%the method's name. In contrast, \code{Modifiers}, \code{ParamList},
+%and \code{SuperCall} are non-terminal symbols, which are
+%encoded/expanded further via other rules. For example,
+%\code{Modifiers} is for \code{public}. \code{ParamList} is for the
+%parameter list and is expanded into the sequence `\code{ID ID CO ID
+%  ID}' for `\code{Transaction ta, int initialSize}'. \code{SuperCall}
+%is encoded into `\code{\textbf{super} OP ParamList CP}', in which
+%\code{\textbf{super}} is a keyword, and so on.
+%==================================================
+
+%%(denoted with bold typeface in lowercase text)
+%and \code{ParamList} is for the parameters.
+
+%If the code is not parseable, we use a partial parser such as
+%PPA~\cite{ppa08} to create an AST and then we produce the syntaxemes
+%from the AST. For the unparseable tokens, their lexical tokens are
+%kept and annotated with the special syntaxeme \code{LEX}.
+
+
+%For example, the statement \code{for (int i=0; i$<$10; i++)
+%  \{System.out.\-println(i);\}} in Java matches the encoding rule for
+%a \code{for} statement, thus, its syntaxeme sequence is the
+%concatenation of the sequence \code{FOR OP INIT SC EXPR SC UPDATE CP}
+%and the syntaxeme sequence for the block statement
+%\code{\{System.out.println(i);\}}. The latter sequence is produced
+%recursively by the function \code{encode} for a \code{Block} as
+%\code{OB EXPR SC CB} since \code{System.out.println(i)} is a
+%StatementExpression.
+
+%(a rule for \code{Block} was used).
+
+%We will continue to encode at the deeper levels until there is no more
+%symbol \code{Statement}. That is, the capital letters in the right
+%panel of Table~\ref{tab:javastruct} are the produced syntaxemes and
+%not expanded further.
+%Finally, such syntaxemes are recursively
+%concatenated to~create~a~larger sequence. Syntaxeme sequences will be
+%used as syntactic~contexts.
+
+
+
